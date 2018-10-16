@@ -8,48 +8,48 @@
 	<div class="container">
 		<h1>View Program</h1>
 		<div class="form-group row">
-			<div class="col-sm-2 col-form-label">Name</div>
+			<div class="col-sm-2 col-form-label" th:utext="#{form.name}">Name</div>
 			<div class="col-sm-10" th:text="${programForm.name}"></div>
 		</div>
 		<div class="form-group row">
-			<div class="col-sm-2 col-form-label">Division</div>
+			<div class="col-sm-2 col-form-label" th:utext="#{form.leadAgency}">Lead Agency</div>
+			<div class="col-sm-10" th:text="${programForm.leadAgency.acronym}"></div>
+		</div>
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label" th:utext="#{form.division}">Division</div>
 			<div class="col-sm-10" th:text="${programForm.division}"></div>
 		</div>
 		<div class="form-group row">
-			<div class="col-sm-2 col-form-label">Funding Type</div>
+			<div class="col-sm-2 col-form-label" th:utext="#{form.fundingType}">Funding Type</div>
 			<div class="col-sm-10" th:text="${programForm.fundingType}"></div>
 		</div>
 		<div class="form-group row">
 			<div class="col-sm-2 col-form-label">Number of agencies</div>
-			<div class="col-sm-10" th:text="${programForm.numberOfAgencies}"></div>
+			<div class="col-sm-10" th:text="${#lists.size(programForm.agencies)}"></div>
 		</div>
 		<div class="form-group row">
-			<div class="col-sm-2 col-form-label">Frequency</div>
+			<div class="col-sm-2 col-form-label" th:utext="#{form.frequency}">Frequency</div>
 			<div class="col-sm-10" th:text="${programForm.frequency}"></div>
 		</div>
 		<div class="form-group row">
-			<div class="col-sm-2 col-form-label">Apply Method</div>
+			<div class="col-sm-2 col-form-label" th:utext="#{form.applyMehod}">Apply Method</div>
 			<div class="col-sm-10" th:text="${programForm.applyMethod}"></div>
 		</div>
 		<div class="form-group row">
-			<div class="col-sm-2 col-form-label">Award System</div>
+			<div class="col-sm-2 col-form-label" th:utext="#{form.awardSystem}">Award System</div>
 			<div class="col-sm-10" th:text="${programForm.awardManagementSystem}"></div>
 		</div>
 		<div class="form-group row">
-			<div class="col-sm-2 col-form-label">Program Lead Name</div>
+			<div class="col-sm-2 col-form-label" th:utext="#{form.programLeadName}">Program Lead Name</div>
 			<div class="col-sm-10" th:text="${programForm.programLeadName}"></div>
 		</div>
 		<div class="form-group row">
-			<div class="col-sm-2 col-form-label">Agencies</div>
+			<div class="col-sm-2 col-form-label" th:utext="#{form.agencies}">Agencies</div>
 			<div class="col-sm-10">
 				<ul th:each="agency : ${programForm.agencies}">
 					<li class="col-sm-10" th:text="${agency.getLocalizedAttribute('acronym')}"></li>
 				</ul>
 			</div>
-		</div>
-		<div class="form-group row">
-			<div class="col-sm-2 col-form-label">Lead Agency</div>
-			<div class="col-sm-10" th:text="${programForm.leadAgency.acronym}"></div>
 		</div>
 		<a class="btn btn-primary" th:href="@{editProgram(id=${programForm.id})}" role="button">Edit</a>
 	</div>

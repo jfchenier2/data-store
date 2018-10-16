@@ -31,8 +31,6 @@ public class Program {
 
 	private String fundingType;
 
-	private short numberOfAgencies;
-
 	private String frequency;
 
 	private String applyMethod;
@@ -63,7 +61,6 @@ public class Program {
 		this.setLeadAgency(f.getLeadAgency());
 		this.setNameEn(f.getNameEn());
 		this.setNameFr(f.getNameFr());
-		this.setNumberOfAgencies(f.getNumberOfAgencies());
 		this.setProgramLeadName(f.getProgramLeadName());
 	}
 
@@ -91,14 +88,6 @@ public class Program {
 
 	public void setNameFr(String nameFr) {
 		this.nameFr = nameFr;
-	}
-
-	public short getNumberOfAgencies() {
-		return numberOfAgencies;
-	}
-
-	public void setNumberOfAgencies(short numberOfAgencies) {
-		this.numberOfAgencies = numberOfAgencies;
 	}
 
 	public String getFrequency() {

@@ -22,10 +22,4 @@ public class DataStoreApplication {
 		SpringApplication.run(DataStoreApplication.class, args);
 	}
 
-	// @Bean
-	// public CommandLineRunner importBaseFileData() {
-	// return (args) -> {
-	// importService.importProgramsFromFile();
-	// };
-	// }
 }

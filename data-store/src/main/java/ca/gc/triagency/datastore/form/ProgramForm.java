@@ -3,7 +3,6 @@ package ca.gc.triagency.datastore.form;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -12,7 +11,6 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import ca.gc.triagency.datastore.model.Agency;
 import ca.gc.triagency.datastore.model.Program;
 
-@Entity
 public class ProgramForm {
 
 	private Long id;
@@ -25,22 +23,34 @@ public class ProgramForm {
 	@Size(min = 2)
 	private String nameFr;
 
+	@NotNull
+	@Size(min = 1)
 	private String division;
 
+	@NotNull
+	@Size(min = 2)
 	private String fundingType;
 
-	private short numberOfAgencies;
-
+	@NotNull
+	@Size(min = 2)
 	private String frequency;
 
+	@NotNull
+	@Size(min = 2)
 	private String applyMethod;
 
+	@NotNull
+	@Size(min = 2)
 	private String awardManagementSystem;
 
+	@NotNull
+	@Size(min = 2)
 	private String programLeadName;
 
+	@NotNull
 	private Set<Agency> agencies;
 
+	@NotNull
 	private Agency leadAgency;
 
 	public ProgramForm(Program p) {
@@ -49,7 +59,6 @@ public class ProgramForm {
 		nameFr = p.getNameFr();
 		this.setFundingType(p.getFundingType());
 		this.setDivision(p.getDivision());
-		this.numberOfAgencies = p.getNumberOfAgencies();
 		this.frequency = p.getFrequency();
 		this.applyMethod = p.getApplyMethod();
 		this.awardManagementSystem = p.getAwardManagementSystem();
@@ -87,14 +96,6 @@ public class ProgramForm {
 
 	public void setNameFr(String nameFr) {
 		this.nameFr = nameFr;
-	}
-
-	public short getNumberOfAgencies() {
-		return numberOfAgencies;
-	}
-
-	public void setNumberOfAgencies(short numberOfAgencies) {
-		this.numberOfAgencies = numberOfAgencies;
 	}
 
 	public String getFrequency() {

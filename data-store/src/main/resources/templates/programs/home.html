@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/general.html :: common_header(~{::title},~{::link},~{::script})}">
+	<title>Data store - Home</title>
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
+	<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script src="/js/datatable.js"></script>
+</head>
+<body>
+	<div th:insert="~{fragments/general.html :: header_nav}" ></div>
+	<div class="section">
+			<div class="col-sm-2"></div>
+			<div class="col-sm-8">
+				<h1>Programs Table</h1>
+				<table id="programsTable" class="display">
+			       <!-- Header Table -->
+			       <thead>
+			            <tr>
+			                <th>Id</th>
+			                <th>Lead Agency</th>
+			                <th>Division</th>
+							<th>Name</th>
+			                <th>frequency</th>
+			                <th>apply Method</th>
+			                <th>Award Management System</th>
+			            </tr>
+			        </thead>
+			        <!-- Footer Table -->
+			        <tfoot>
+			            <tr>
+			                <th>Id</th>
+			                <th>Lead Agency</th>
+			                <th>Division</th>
+							<th>Name</th>
+			                <th>frequency</th>
+			                <th>apply Method</th>
+			                <th>Award Management System</th>
+			            </tr>
+			        </tfoot>
+			    </table>
+		        <p>Click <a th:href="programs">here</a> to access JSON API.</p>
+			</div>
+			<div class="col-sm-2"></div>
+
+	</div>    
+</body>
+</html>

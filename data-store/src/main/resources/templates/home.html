@@ -1,0 +1,15 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/general.html :: common_header(~{::title},~{},~{})}">
+<title>Data store - Home</title>
+</head>
+<body>
+	<div th:insert="~{fragments/general.html :: header_nav}" />
+	<div class="container">
+		<h1 th:utext="#{greeting}"></h1>
+        <p>Welcome to the data store.  Please select one of the following opitons</p>
+        <p><a href="import/importPrograms">Import Programs</a> from file</p>
+        <p><a href="programs/home">Browse Programs</a></p>
+	</div>
+   </body>
+</html>

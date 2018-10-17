@@ -16,12 +16,12 @@ public class ImportController {
 	@Autowired
 	ImportService importService;
 
-	@GetMapping("/importPrograms")
+	@GetMapping("/home")
 	public String importPrograms() {
 		return "import/importPrograms";
 	}
 
-	@PostMapping("/importPrograms")
+	@PostMapping("/home")
 	public String importPrograms_post(Model model) {
 		importService.importProgramsFromFile();
 		return "redirect:/home";

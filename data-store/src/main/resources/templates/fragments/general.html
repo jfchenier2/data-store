@@ -23,8 +23,17 @@
 
 <body>
 
-	<header th:fragment="header_nav">
-	<div class="container"><img src="/images/sig-blk-en.svg" height="45px;" style="padding: 4px;"/></div>	
+	<header th:fragment="header_nav(activeTab)">
+	<div class="container" style="height:10px; align: right;">
+		<nav class="navbar">
+			<ul class="nav navbar-nav navbar-right">
+				<li class="nav-item" th:with="currentUrl=(${@currentUrlWithoutParam.apply('lang')})">
+   					<a class="nav-link" th:href="@{${currentUrl}(lang=#{lang.otherLocale})}" th:text="#{lang.otherLanguage}">click here</a>
+				</li>
+			</ul>
+		</nav>
+	</div>
+	<div class="container"><img src="/images/sig-blk-en.svg" height="40px;" style="padding: 4px;"/></div>	
 	<nav class="navbar navbar-inverse">
 		<div class="container">
 			<div class="navbar-header">
@@ -32,11 +41,13 @@
 			</div>
 			<div id="navbar" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
-					<li class="active"><a href="/">Home</a></li>
-					<li><a href="/programs/home">Programs</a></li>
-					<li th:with="currentUrl=(${@currentUrlWithoutParam.apply('lang')})">
-    					<a th:href="@{${currentUrl}(lang=#{lang.otherLocale})}" th:text="#{lang.otherLanguage}">click here</a>
-					</li>
+					<li th:class="${activeTab == 'contacts'}? 'active' : null"><a href="/">Home</a></li>
+					<li th:class="${activeTab == 'programs'}? 'active' : null"><a href="/programs/home">Programs</a></li>
+					<li th:class="${activeTab == 'import'}? 'active' : null"><a href="/import/home">Import</a></li>
+<!-- 					<li><form th:action="@{/logout}" method="post"> -->
+<!-- 			            <input type="submit" value="Sign Out"/> -->
+<!--         			</form></li> -->
+					
 				</ul>
 			</div>
 		</div>

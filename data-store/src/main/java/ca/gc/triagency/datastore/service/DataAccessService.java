@@ -15,4 +15,8 @@ public interface DataAccessService {
 
 	public Program getProgram(Long id);
 
+	public Agency getAgency(long id);
+
+	public List<Program> getAgencyPrograms(long id);
+
 }

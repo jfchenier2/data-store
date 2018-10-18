@@ -43,4 +43,14 @@ public class DataAccessServiceImpl implements DataAccessService {
 		return programRepo.save(p);
 	}
 
+	@Override
+	public Agency getAgency(long id) {
+		return agencyRepo.findById(id).orElse(null);
+	}
+
+	@Override
+	public List<Program> getAgencyPrograms(long id) {
+		return programRepo.findByLeadAgencyId(id);
+	}
+
 }

@@ -35,7 +35,7 @@ public class ProgramsController {
 	}
 
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
-	public String getProgramById() {
+	public String home() {
 		return "programs/home";
 	}
 
@@ -49,6 +49,13 @@ public class ProgramsController {
 	public String viewProgram(@RequestParam("id") long id, Model model) {
 		model.addAttribute("programForm", new ProgramForm(dataService.getProgram(id)));
 		return "programs/viewProgram";
+	}
+
+	@GetMapping(value = "/viewAgency")
+	public String viewAgency(@RequestParam("id") long id, Model model) {
+		model.addAttribute("agency", dataService.getAgency(id));
+		model.addAttribute("agencyPrograms", dataService.getAgencyPrograms(id));
+		return "programs/viewAgency";
 	}
 
 	@GetMapping(value = "/editProgram")

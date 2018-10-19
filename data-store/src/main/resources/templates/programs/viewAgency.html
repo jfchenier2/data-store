@@ -32,7 +32,7 @@
 				</thead>
 				<tbody>
 					<tr th:each="program : ${agencyPrograms}">
-						<td th:text="${program.name}"></td>
+						<td><a th:href="@{'/programs/viewProgram'(id=${program.id})}" th:text="${program.name}"></a></td>
 						<td th:text="${program.leadAgency.acronym}"></td>
 					</tr>
 				</tbody>

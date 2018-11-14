@@ -27,6 +27,10 @@ public class Program {
 
 	private String nameFr;
 
+	@ManyToOne
+	@JoinColumn(name = "lead_agency_id")
+	private Agency leadAgency;
+
 	private String division;
 
 	private String fundingType;
@@ -41,11 +45,11 @@ public class Program {
 
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable
-	private Set<Agency> agencies;
+	private Set<GrantSystemCapability> grantingCapabilities;
 
-	@ManyToOne
-	@JoinColumn(name = "lead_agency_id")
-	private Agency leadAgency;
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JoinTable
+	private Set<Agency> agencies;
 
 	public Program() {
 		agencies = new HashSet<Agency>();
@@ -161,5 +165,13 @@ public class Program {
 
 	public void setFundingType(String fundingType) {
 		this.fundingType = fundingType;
+	}
+
+	public Set<GrantSystemCapability> getGrantingCapabilities() {
+		return grantingCapabilities;
+	}
+
+	public void setGrantingCapabilities(Set<GrantSystemCapability> grantingCapabilities) {
+		this.grantingCapabilities = grantingCapabilities;
 	}
 }

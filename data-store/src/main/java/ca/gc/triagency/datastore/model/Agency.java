@@ -7,6 +7,8 @@ import javax.persistence.Id;
 
 import org.springframework.context.i18n.LocaleContextHolder;
 
+import ca.gc.triagency.datastore.model.util.LocalizedParametersModel;
+
 @Entity
 public class Agency implements LocalizedParametersModel {
 	@Id

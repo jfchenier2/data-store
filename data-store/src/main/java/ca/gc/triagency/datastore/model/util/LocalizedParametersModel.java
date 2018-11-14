@@ -1,4 +1,6 @@
-package ca.gc.triagency.datastore.model;
+package ca.gc.triagency.datastore.model.util;
+
+import java.lang.reflect.InvocationTargetException;
 
 import org.springframework.context.i18n.LocaleContextHolder;
 
@@ -13,8 +15,16 @@ public interface LocalizedParametersModel {
 		}
 
 		try {
-			retval = (String) Agency.class.getDeclaredField(attributeName + langAddOn).get(this);
-		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+			String methodName = "get" + attributeName.substring(0, 1).toUpperCase() + attributeName.substring(1)
+					+ langAddOn;
+			retval = (String) this.getClass().getDeclaredMethod(methodName).invoke(this);
+		} catch (IllegalArgumentException | IllegalAccessException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

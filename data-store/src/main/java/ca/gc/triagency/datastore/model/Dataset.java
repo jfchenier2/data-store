@@ -2,7 +2,10 @@ package ca.gc.triagency.datastore.model;
 
 import java.time.LocalDateTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,15 +17,23 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 public class Dataset {
+	public DatasetStatus getDatasetStatus() {
+		return datasetStatus;
+	}
+
+	public void setDatasetStatus(DatasetStatus datasetStatus) {
+		this.datasetStatus = datasetStatus;
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
+	private Long id;
 
 	private String filename;
 
 	@ManyToOne
-	@JoinColumn(name = "registered_dataset_id")
-	private RegisteredDataset registeredDataset;
+	@JoinColumn(name = "dataset_configuration_id")
+	private DatasetConfiguration datasetConfiguration;
 
 	@CreationTimestamp
 	private LocalDateTime createDateTime;
@@ -33,6 +44,16 @@ public class Dataset {
 	private long totalRecords;
 
 	private long currentRow;
+
+	/** General type indicator. */
+	@Column(name = "dataset_status")
+	@Enumerated(EnumType.STRING)
+	private DatasetStatus datasetStatus;
+
+	public enum DatasetStatus {
+		/** Some other format. */
+		CREATED, UPLOADING, UPLOAD_COMPLETE, ASSESS, APPROVED, TO_DELETE, ERROR
+	}
 
 	public String getFilename() {
 		return filename;
@@ -74,16 +95,16 @@ public class Dataset {
 		this.currentRow = currentRow;
 	}
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public RegisteredDataset getRegisteredDataset() {
-		return registeredDataset;
+	public DatasetConfiguration getDatasetConfiguration() {
+		return datasetConfiguration;
 	}
 
-	public void setRegisteredDataset(RegisteredDataset registeredDataset) {
-		this.registeredDataset = registeredDataset;
+	public void setDatasetConfiguration(DatasetConfiguration datasetConfiguration) {
+		this.datasetConfiguration = datasetConfiguration;
 	}
 
 }

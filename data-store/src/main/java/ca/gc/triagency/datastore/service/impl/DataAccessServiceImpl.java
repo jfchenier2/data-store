@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ca.gc.triagency.datastore.model.Agency;
+import ca.gc.triagency.datastore.model.Organization;
 import ca.gc.triagency.datastore.model.Program;
 import ca.gc.triagency.datastore.repo.AgencyRepository;
+import ca.gc.triagency.datastore.repo.OrganizationRepository;
 import ca.gc.triagency.datastore.repo.ProgramRepository;
 import ca.gc.triagency.datastore.service.DataAccessService;
 
@@ -22,6 +24,8 @@ public class DataAccessServiceImpl implements DataAccessService {
 	ProgramRepository programRepo;
 	@Autowired
 	AgencyRepository agencyRepo;
+	@Autowired
+	OrganizationRepository orgRepo;
 
 	@Override
 	public List<Program> getAllPrograms() {
@@ -51,6 +55,21 @@ public class DataAccessServiceImpl implements DataAccessService {
 	@Override
 	public List<Program> getAgencyPrograms(long id) {
 		return programRepo.findByLeadAgencyId(id);
+	}
+
+	@Override
+	public List<Organization> getAllOrganizations() {
+		return orgRepo.findAll();
+	}
+
+	@Override
+	public Organization saveOrganization(Organization newOrg) {
+		return orgRepo.save(newOrg);
+	}
+
+	@Override
+	public Organization getOrganization(Long orgId) {
+		return orgRepo.getOne(orgId);
 	}
 
 }

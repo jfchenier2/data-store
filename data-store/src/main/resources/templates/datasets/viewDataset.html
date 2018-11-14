@@ -1,0 +1,84 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/general.html :: common_header(~{::title},~{::link},~{::script})}">
+	<title>Data store - View Data-Set</title>
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
+	<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script src="/js/viewDatasetDatatable.js"></script>
+</head>
+<body>
+	<div th:insert="~{fragments/general.html :: header_nav('datasets')}" />
+	<div class="container">
+		<h1 th:utext="#{form.viewDataset}">View Dataset</h1>
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label" th:utext="#{form.filename}">File Name</div>
+			<div class="col-sm-10" th:text="${dataset.filename}"></div>
+		</div>
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label" th:utext="#{form.datasetConfiguration}">Data-set Configuration</div>
+			<div class="col-sm-10"><a th:href="@{'viewDatasetConfig'(id=${dataset.datasetConfiguration.id})}" th:text="${dataset.datasetConfiguration.acronym}"></a></div>
+		</div>
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label" th:utext="#{form.dateCreated}">Created Date</div>
+			<div class="col-sm-10" th:text="${dataset.createDateTime}"></div>
+		</div>
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label" th:utext="#{form.dateUpdated}">Updated Date</div>
+			<div class="col-sm-10" th:text="${dataset.updateDateTime}"></div>
+		</div>
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label" th:utext="#{form.status}">Status</div>
+			<div class="col-sm-10" th:text="${dataset.datasetStatus}"></div>
+		</div>
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label" th:utext="#{form.totalRecords}">Total Records</div>
+			<div class="col-sm-10" th:text="${dataset.totalRecords}"></div>
+		</div>
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label" th:utext="#{form.currentRecord}">Current Record</div>
+			<div class="col-sm-10" th:text="${dataset.currentRow}"></div>
+		</div>
+		
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label" th:utext="#{dataset.datasetWarnings}">Data-set Integration Warnings</div>
+			<div th:if="${not #lists.isEmpty(warningOrgs)}">
+				<div class="col-sm-10 alert-warning" th:utext="${dataset.datasetWarningsDetected}">Warnings Detected</div>
+			</div>
+			<div th:if="${#lists.isEmpty(warningOrgs)}">
+				<div class="col-sm-10 alert-success" th:utext="#{dataset.noWarningsSuccess}">Success! No warnings</div>
+			</div>
+		</div>
+		<div th:if="${#lists.isEmpty(warningOrgs)}">
+			<div class="form-group row">
+				<div class="col-sm-2 col-form-label" th:utext="#{form.clickApprove}">Click to approve</div>
+				<div class="col-sm-10"><form th:method="post" th:action="@{approveDataset}"><input type="hidden" name="id" th:value="${dataset.id}" /><input type="submit" class="btn" th:value="#{action.approve}"/></form></div>
+			</div>
+		</div>
+		<div th:if="${not #lists.isEmpty(warningOrgs)}">
+			<div class="col-sm-2 col-form-label" th:utext="#{dataset.unlinkedOrgWarnings}">Unlinked Organization Warnings</div>
+			<div class="form-group row">
+				<div class="col-sm-10">
+					<table id="datasetPrograms">
+						<thead>
+							<tr>
+								<td>Name</td>
+								<td>Linked Artifact</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="dsOrg : ${warningOrgs}">
+								<td><a th:href="@{'viewDatasetOrg'(id=${dsOrg.id})}" th:text="${dsOrg.getLocalizedAttribute('name')}"></a></td>
+								<td th:text="todo"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<p>In order to quickly process these Organizations, click on "Express Approve".  This will create the corresponding Artifacts and appropriate links to the target Dataset Configuration.</p>
+			<form th:action="@{expressCreateAndSetLink}" method="POST"><input type="hidden" name="id" th:value="${dataset.id}"/><input type="submit" th:value="#{action.expressCreateAndLink}" class="btn btn-primary" /></form>
+		</div>
+		
+	</div>
+   </body>
+</html>
+

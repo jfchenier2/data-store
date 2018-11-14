@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/general.html :: common_header(~{::title},~{::link},~{::script})}">
+	<title>Data store - View Dataset Organization</title>
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
+	<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script src="/js/viewDatasetOrgDatatable.js"></script>
+</head>
+<body>
+	<div th:insert="~{fragments/general.html :: header_nav('datasets')}" />
+	<div class="container">
+		<h1>View Data-set Organization</h1>
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label" th:utext="#{form.name}">Name</div>
+			<div class="col-sm-10" th:text="${org.getLocalizedAttribute('name')}"></div>
+		</div>
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label" th:utext="#{form.datasetConfiguration}">Data-set Configuration</div>
+			<div class="col-sm-10"><a th:href="@{'viewDatasetConfig'(id=${org.datasetConfiguration.id})}" th:text="${org.datasetConfiguration.acronym}"></a></div>
+		</div>
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label" th:utext="#{form.extId}">External ID</div>
+			<div class="col-sm-10" th:text="${org.extId}"></div>
+		</div>
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label" th:utext="#{form.link}">Link</div>
+			<div class="col-sm-10" th:text="${org.link != null} ? ${org.link.org.getLocalizedAttribute('name')} : #{form.noLink}"></div>
+		</div>
+		<div th:if="${org.link == null}">
+			<div class="form-group row">
+				<div class="col-sm-2 col-form-label" th:utext="#{form.orgsForMapping}">Organizations for mapping</div>
+			</div>
+			<div class="form-group row">
+				<div class="col-sm-10">
+					<table id="orgsForLinking">
+					<thead>
+						<tr>
+							<td>Organization Name</td>
+							<td>Action</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="orgForLink : ${orgsForLink}">
+							<td><a th:href="@{'/artifacts/orgs/viewOrg'(id=${orgForLink.id})}" th:text="${orgForLink.getLocalizedAttribute('name')}"></a></td>
+							<td><form method="post" th:action="registerOrgLink"><input type="hidden" name="datasetOrgId" th:value="${org.id}" /><input type="hidden" name="orgId" th:value="${orgForLink.id}" /><input class="btn" type="submit" th:value="#{form.link}"/></form></td>
+						</tr>
+					</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="form-group row">
+				<div class="col-sm-4 col-form-label" th:utext="#{form.createFromDataset}">Create Artifact From Data-set</div>
+				<div class="col-sm-8"><form th:action="createOrgFromDataset" method="post"><input name="id" type="hidden" th:value="${org.id}"/><input class="btn" type="submit" th:value="#{action.create}"/></form></div>
+			</div>
+			
+		</div>
+	</div>
+   </body>
+</html>
+

@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/general.html :: common_header(~{::title},~{::link},~{::script})}">
+	<title>Data store - Home</title>
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
+	<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script src="/js/datasetsTable.js"></script>
+</head>
+<body>
+	<div th:insert="~{fragments/general.html :: header_nav('datasets')}" ></div>
+	<div class="section">
+			<div class="col-sm-2"></div>
+			<div class="col-sm-8">
+				<h1>Active Data-Sets</h1>
+				<table id="datasetsTable" class="display">
+			       <!-- Header Table -->
+			       <thead>
+			            <tr>
+			                <th>Config Type</th>
+			                <th>Date Created</th>
+			                <th>Status</th>
+							<th>Total records</th>
+			                <th>Current record</th>
+			                <th>Warnings</th>
+			            </tr>
+				</thead>
+				<tbody>
+					<tr th:each="dataset : ${datasets}">
+						<td><a th:href="@{viewDataset(id=${dataset.id})}" th:text="${dataset.datasetConfiguration.getLocalizedAttribute('name')}"></a></td>
+						<td th:text="${dataset.createDateTime}"></td>
+						<td th:text="${dataset.datasetStatus}"></td>
+						<td th:text="${dataset.totalRecords}"></td>
+						<td th:text="${dataset.currentRow}"></td>
+						<td>todo</td>
+					</tr>
+				</tbody>
+			        <tfoot>
+			            <tr>
+			                <th>Config Type</th>
+			                <th>Date Created</th>
+			                <th>Status</th>
+							<th>Total records</th>
+			                <th>Current record</th>
+			                <th>Warnings</th>
+			            </tr>
+			        </tfoot>
+			    </table>
+		        <p>Click <a th:href="createDataset">here</a> to create a new data-set</p>
+			</div>
+			<div class="col-sm-2"></div>
+
+	</div>    
+</body>
+</html>

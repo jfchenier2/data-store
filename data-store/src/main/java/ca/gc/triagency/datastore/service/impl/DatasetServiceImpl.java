@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
-import ca.gc.triagency.datastore.model.ArtifactLinkOrganization;
 import ca.gc.triagency.datastore.model.Dataset;
 import ca.gc.triagency.datastore.model.Dataset.DatasetStatus;
 import ca.gc.triagency.datastore.model.DatasetAppRegistrationRole;
@@ -33,9 +32,9 @@ import ca.gc.triagency.datastore.model.DatasetConfiguration;
 import ca.gc.triagency.datastore.model.DatasetOrganization;
 import ca.gc.triagency.datastore.model.DatasetPerson;
 import ca.gc.triagency.datastore.model.DatasetProgram;
+import ca.gc.triagency.datastore.model.EntityLinkOrganization;
 import ca.gc.triagency.datastore.model.Organization;
 import ca.gc.triagency.datastore.model.file.AwardDatasetRow;
-import ca.gc.triagency.datastore.repo.ArtifactLinkOrgRepository;
 import ca.gc.triagency.datastore.repo.DatasetAppRegistrationRepository;
 import ca.gc.triagency.datastore.repo.DatasetAppRegistrationRoleRepository;
 import ca.gc.triagency.datastore.repo.DatasetApplicationRepository;
@@ -44,6 +43,7 @@ import ca.gc.triagency.datastore.repo.DatasetOrganizationRepository;
 import ca.gc.triagency.datastore.repo.DatasetPersonRepository;
 import ca.gc.triagency.datastore.repo.DatasetProgramRepository;
 import ca.gc.triagency.datastore.repo.DatasetRepository;
+import ca.gc.triagency.datastore.repo.EntityLinkOrgRepository;
 import ca.gc.triagency.datastore.service.DatasetService;
 
 @Service
@@ -58,7 +58,7 @@ public class DatasetServiceImpl implements DatasetService {
 	DatasetApplicationRepository datasetApplicationRepo;
 
 	@Autowired
-	ArtifactLinkOrgRepository artifactLinkOrgRepo;
+	EntityLinkOrgRepository entityLinkOrgRepo;
 
 	@Autowired
 	DatasetProgramRepository datasetProgramRepo;
@@ -275,7 +275,7 @@ public class DatasetServiceImpl implements DatasetService {
 		extIds.add(new Long(0));
 		Dataset dataset = datasetRepo.getOne(id);
 		long configId = dataset.getDatasetConfiguration().getId();
-		for (ArtifactLinkOrganization link : artifactLinkOrgRepo.findByDatasetConfigurationId(configId)) {
+		for (EntityLinkOrganization link : entityLinkOrgRepo.findByDatasetConfigurationId(configId)) {
 			extIds.add(link.getExtId());
 			// String asdf = "";
 
@@ -305,11 +305,11 @@ public class DatasetServiceImpl implements DatasetService {
 
 	@Override
 	public void linkDatasetOrg(DatasetOrganization org, Organization newOrg) {
-		ArtifactLinkOrganization link = new ArtifactLinkOrganization();
+		EntityLinkOrganization link = new EntityLinkOrganization();
 		link.setDatasetConfiguration(org.getDatasetConfiguration());
 		link.setExtId(org.getExtId());
 		link.setOrg(newOrg);
-		artifactLinkOrgRepo.save(link);
+		entityLinkOrgRepo.save(link);
 
 		org.setLink(link);
 		datasetOrgRepo.save(org);

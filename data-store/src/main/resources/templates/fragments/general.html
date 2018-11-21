@@ -37,13 +37,13 @@
 	<nav class="navbar navbar-inverse">
 		<div class="container">
 			<div class="navbar-header">
-				<a class="navbar-brand" href="http://spring.io">Spring Boot</a>
+				<a th:class="${activeTab == 'home'}? 'navbar-brand active' : 'navbar-brand'"href="/">Data Store</a>
 			</div>
 			<div id="navbar" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
-					<li th:class="${activeTab == 'home'}? 'active' : null"><a href="/">Home</a></li>
-					<li th:class="${activeTab == 'programs'}? 'active' : null"><a href="/programs/home">Programs</a></li>
-					<li th:class="${activeTab == 'import'}? 'active' : null"><a href="/import/home">Import</a></li>
+					<li th:class="${activeTab == 'api'}? 'active' : null"><a href="/api/home">APIs</a></li>
+					<li th:class="${activeTab == 'entities'}? 'active' : null"><a href="/entities/home">Entities</a></li>
+					<li th:class="${activeTab == 'reports'}? 'active' : null"><a href="/reports/home">Reports</a></li>
 					<li th:class="${activeTab == 'datasets'}? 'active' : null"><a href="/datasets/home">Data-Sets</a></li>
 <!-- 					<li><form th:action="@{/logout}" method="post"> -->
 <!-- 			            <input type="submit" value="Sign Out"/> -->

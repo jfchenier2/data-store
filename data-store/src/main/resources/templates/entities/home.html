@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/general.html :: common_header(~{::title},~{},~{})}">
+<title>Data store - Home</title>
+</head>
+<body>
+	<div th:insert="~{fragments/general.html :: header_nav('entities')}" />
+	<div class="container">
+		<h1 th:utext="#{entities.title}"></h1>
+        <p th:utext="#{entities.description}"></p>
+        <ol>
+	        <li><a href="programs/home">Programs</a> from file</li>
+	        <li><a href="orgs/home">Organizations</a></li>
+	        <li><a >Applications</a></li>
+	        <li><a >Applicants</a></li>
+	        <li><a >Awards</a></li>
+	        <li><a >Payments</a></li>
+	        <li><a >Research Classification</a></li>
+	        <li><a >MDM / ECR</a></li>
+        </ol>
+	</div>
+   </body>
+</html>

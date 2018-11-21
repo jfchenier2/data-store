@@ -41,7 +41,7 @@
 					</thead>
 					<tbody>
 						<tr th:each="orgForLink : ${orgsForLink}">
-							<td><a th:href="@{'/artifacts/orgs/viewOrg'(id=${orgForLink.id})}" th:text="${orgForLink.getLocalizedAttribute('name')}"></a></td>
+							<td><a th:href="@{'/entities/orgs/viewOrg'(id=${orgForLink.id})}" th:text="${orgForLink.getLocalizedAttribute('name')}"></a></td>
 							<td><form method="post" th:action="registerOrgLink"><input type="hidden" name="datasetOrgId" th:value="${org.id}" /><input type="hidden" name="orgId" th:value="${orgForLink.id}" /><input class="btn" type="submit" th:value="#{form.link}"/></form></td>
 						</tr>
 					</tbody>
@@ -49,7 +49,7 @@
 				</div>
 			</div>
 			<div class="form-group row">
-				<div class="col-sm-4 col-form-label" th:utext="#{form.createFromDataset}">Create Artifact From Data-set</div>
+				<div class="col-sm-4 col-form-label" th:utext="#{form.createFromDataset}">Create Entity From Data-set</div>
 				<div class="col-sm-8"><form th:action="createOrgFromDataset" method="post"><input name="id" type="hidden" th:value="${org.id}"/><input class="btn" type="submit" th:value="#{action.create}"/></form></div>
 			</div>
 			

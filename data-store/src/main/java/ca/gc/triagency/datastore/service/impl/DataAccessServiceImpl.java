@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 import ca.gc.triagency.datastore.model.Agency;
 import ca.gc.triagency.datastore.model.Organization;
 import ca.gc.triagency.datastore.model.Program;
+import ca.gc.triagency.datastore.model.view.OrganizationWithLinkNum;
 import ca.gc.triagency.datastore.repo.AgencyRepository;
 import ca.gc.triagency.datastore.repo.OrganizationRepository;
 import ca.gc.triagency.datastore.repo.ProgramRepository;
+import ca.gc.triagency.datastore.repo.ViewOrgsWithLinkNumRepository;
 import ca.gc.triagency.datastore.service.DataAccessService;
 
 @Service
@@ -26,6 +28,8 @@ public class DataAccessServiceImpl implements DataAccessService {
 	AgencyRepository agencyRepo;
 	@Autowired
 	OrganizationRepository orgRepo;
+	@Autowired
+	ViewOrgsWithLinkNumRepository viewOrgsWithLinkNumRepo;
 
 	@Override
 	public List<Program> getAllPrograms() {
@@ -70,6 +74,11 @@ public class DataAccessServiceImpl implements DataAccessService {
 	@Override
 	public Organization getOrganization(Long orgId) {
 		return orgRepo.getOne(orgId);
+	}
+
+	@Override
+	public List<OrganizationWithLinkNum> getAllOrganizationsWithLinkNum() {
+		return viewOrgsWithLinkNumRepo.findAll();
 	}
 
 }

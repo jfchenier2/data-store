@@ -21,12 +21,16 @@ import ca.gc.triagency.datastore.form.ProgramForm;
 import ca.gc.triagency.datastore.model.Agency;
 import ca.gc.triagency.datastore.model.Program;
 import ca.gc.triagency.datastore.service.DataAccessService;
+import ca.gc.triagency.datastore.service.ImportService;
 
 @Controller
-@RequestMapping("/programs")
-public class ProgramsController {
+@RequestMapping("/entities/programs")
+public class ProgramEntitiesController {
 	@Autowired
 	DataAccessService dataService;
+
+	@Autowired
+	ImportService importService;
 
 	@ResponseBody
 	@RequestMapping(path = "/programs", method = RequestMethod.GET)
@@ -36,26 +40,26 @@ public class ProgramsController {
 
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String home() {
-		return "programs/home";
+		return "entities/programs/home";
 	}
 
 	@GetMapping(value = "/createProgram")
 	public String createProgram(Model model) {
 		model.addAttribute("agencies", dataService.getAllAgencies());
-		return "programs/createProgram";
+		return "entities/programs/createProgram";
 	}
 
 	@GetMapping(value = "/viewProgram")
 	public String viewProgram(@RequestParam("id") long id, Model model) {
 		model.addAttribute("programForm", new ProgramForm(dataService.getProgram(id)));
-		return "programs/viewProgram";
+		return "entities/programs/viewProgram";
 	}
 
 	@GetMapping(value = "/viewAgency")
 	public String viewAgency(@RequestParam("id") long id, Model model) {
 		model.addAttribute("agency", dataService.getAgency(id));
 		model.addAttribute("agencyPrograms", dataService.getAgencyPrograms(id));
-		return "programs/viewAgency";
+		return "entities/programs/viewAgency";
 	}
 
 	@GetMapping(value = "/editProgram")
@@ -71,7 +75,7 @@ public class ProgramsController {
 		}
 		model.addAttribute("otherAgencies", otherAgencies);
 		model.addAttribute("allAgencies", allAgencies);
-		return "programs/editProgram";
+		return "entities/programs/editProgram";
 	}
 
 	@PostMapping(value = "/editProgram")
@@ -81,11 +85,23 @@ public class ProgramsController {
 
 		if (bindingResult.hasErrors()) {
 			// model.addAttribute("allAgencies", dataService.getAllAgencies());
-			return "programs/editProgram";
+			return "entities/programs/editProgram";
 		}
 		Program targetUpdate = dataService.getProgram(command.getId());
 		targetUpdate.loadFromForm(command);
 		dataService.saveProgram(targetUpdate);
 		return "redirect:viewProgram?id=" + targetUpdate.getId();
 	}
+
+	@GetMapping("/importProgramsFromFile")
+	public String importPrograms() {
+		return "entities/programs/importPrograms";
+	}
+
+	@PostMapping("/importProgramsFromFile")
+	public String importPrograms_post(Model model) {
+		importService.importProgramsFromFile();
+		return "redirect:/home";
+	}
+
 }

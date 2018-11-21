@@ -5,6 +5,7 @@ import java.util.List;
 import ca.gc.triagency.datastore.model.Agency;
 import ca.gc.triagency.datastore.model.Organization;
 import ca.gc.triagency.datastore.model.Program;
+import ca.gc.triagency.datastore.model.view.OrganizationWithLinkNum;
 
 public interface DataAccessService {
 
@@ -25,5 +26,7 @@ public interface DataAccessService {
 	public Organization saveOrganization(Organization newOrg);
 
 	public Organization getOrganization(Long orgId);
+
+	public List<OrganizationWithLinkNum> getAllOrganizationsWithLinkNum();
 
 }

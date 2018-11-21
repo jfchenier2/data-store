@@ -8,7 +8,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class ArtifactLinkOrganization {
+public class EntityLinkOrganization {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;

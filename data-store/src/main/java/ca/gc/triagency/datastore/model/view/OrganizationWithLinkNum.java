@@ -1,37 +1,31 @@
-package ca.gc.triagency.datastore.model;
+package ca.gc.triagency.datastore.model.view;
 
 import java.time.LocalDateTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
 
 import ca.gc.triagency.datastore.model.util.LocalizedParametersModel;
 
 @Entity
-public class Organization implements LocalizedParametersModel {
+@Table(name = "orgs_with_external_link_num", schema = "data_cabin")
+public class OrganizationWithLinkNum implements LocalizedParametersModel {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
 	private String nameEn;
 
 	private String nameFr;
 
+	@Column(name = "link_num")
+	private long linkNum;
+
 	@CreationTimestamp
 	private LocalDateTime createDateTime;
-
-	public Organization() {
-
-	}
-
-	public Organization(String nameEn, String nameFr) {
-		this.setNameEn(nameEn);
-		this.setNameFr(nameFr);
-	}
 
 	public String getNameEn() {
 		return nameEn;
@@ -49,10 +43,6 @@ public class Organization implements LocalizedParametersModel {
 		this.nameFr = nameFr;
 	}
 
-	public Long getId() {
-		return id;
-	}
-
 	public LocalDateTime getCreateDateTime() {
 		return createDateTime;
 	}
@@ -60,5 +50,20 @@ public class Organization implements LocalizedParametersModel {
 	public void setCreateDateTime(LocalDateTime createDateTime) {
 		this.createDateTime = createDateTime;
 	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public long getLinkNum() {
+		return linkNum;
+	}
+
+	public void setLinkNum(long linkNum) {
+		this.linkNum = linkNum;
+	}
+
+	// @UpdateTimestamp
+	// private LocalDateTime updateDateTime;
 
 }

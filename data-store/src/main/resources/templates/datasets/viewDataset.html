@@ -62,7 +62,7 @@
 						<thead>
 							<tr>
 								<td>Name</td>
-								<td>Linked Artifact</td>
+								<td>Linked Entity</td>
 							</tr>
 						</thead>
 						<tbody>
@@ -74,7 +74,7 @@
 					</table>
 				</div>
 			</div>
-			<p>In order to quickly process these Organizations, click on "Express Approve".  This will create the corresponding Artifacts and appropriate links to the target Dataset Configuration.</p>
+			<p>In order to quickly process these Organizations, click on "Express Approve".  This will create the corresponding Entities and appropriate links to the target Dataset Configuration.</p>
 			<form th:action="@{expressCreateAndSetLink}" method="POST"><input type="hidden" name="id" th:value="${dataset.id}"/><input type="submit" th:value="#{action.expressCreateAndLink}" class="btn btn-primary" /></form>
 		</div>
 		

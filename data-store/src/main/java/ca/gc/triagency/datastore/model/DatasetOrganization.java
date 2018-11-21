@@ -28,8 +28,8 @@ public class DatasetOrganization implements LocalizedParametersModel {
 	private DatasetConfiguration datasetConfiguration;
 
 	@ManyToOne
-	@JoinColumn(name = "artifact_link_organization_id", nullable = true)
-	private ArtifactLinkOrganization link;
+	@JoinColumn(name = "entity_link_organization_id", nullable = true)
+	private EntityLinkOrganization link;
 
 	@Override
 	public String toString() {
@@ -72,11 +72,11 @@ public class DatasetOrganization implements LocalizedParametersModel {
 		this.datasetConfiguration = datasetConfiguration;
 	}
 
-	public ArtifactLinkOrganization getLink() {
+	public EntityLinkOrganization getLink() {
 		return link;
 	}
 
-	public void setLink(ArtifactLinkOrganization link) {
+	public void setLink(EntityLinkOrganization link) {
 		this.link = link;
 	}
 }

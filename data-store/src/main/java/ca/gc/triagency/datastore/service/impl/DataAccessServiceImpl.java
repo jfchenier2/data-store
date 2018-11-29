@@ -14,7 +14,7 @@ import ca.gc.triagency.datastore.model.view.OrganizationWithLinkNum;
 import ca.gc.triagency.datastore.repo.AgencyRepository;
 import ca.gc.triagency.datastore.repo.OrganizationRepository;
 import ca.gc.triagency.datastore.repo.ProgramRepository;
-import ca.gc.triagency.datastore.repo.ViewOrgsWithLinkNumRepository;
+import ca.gc.triagency.datastore.repo.view.ViewOrgsWithLinkNumRepository;
 import ca.gc.triagency.datastore.service.DataAccessService;
 
 @Service

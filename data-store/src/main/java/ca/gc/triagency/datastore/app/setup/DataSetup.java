@@ -84,6 +84,39 @@ public class DataSetup {
 			config.setNameEn("RP1 Master datset");
 			config.setNameFr("Info packet RP1");
 			configRepo.save(config);
+
+			GrantSystemCapability amisApplsCapability = new GrantSystemCapability();
+			amisApplsCapability.setGrantingSystem(amis);
+			amisApplsCapability.setGrantingFunction(GrantingFunction.APPLY);
+			amisApplsCapability.setNameEn("AMIS Applications");
+			amisApplsCapability.setNameFr("Applications de AMIS");
+			amisApplsCapability.setAcronymEn("AMIS_APPS");
+			amisApplsCapability.setAcronymFr("AMIS_APPS");
+			systemCapacityRepo.save(amisApplsCapability);
+
+			DatasetConfiguration amisApplsConfig = new DatasetConfiguration();
+			amisApplsConfig.setAcronym("AMISMASTER");
+			amisApplsConfig.setGrantSystemCapability(amisApplsCapability);
+			amisApplsConfig.setNameEn("AMIS Master dataset");
+			amisApplsConfig.setNameFr("Ensemble de donnees AMIS Complet");
+			configRepo.save(amisApplsConfig);
+
+			GrantSystemCapability namisApplsCapability = new GrantSystemCapability();
+			namisApplsCapability.setGrantingSystem(amis);
+			namisApplsCapability.setGrantingFunction(GrantingFunction.APPLY);
+			namisApplsCapability.setNameEn("NAMIS Applications");
+			namisApplsCapability.setNameFr("Applications de NAMIS");
+			namisApplsCapability.setAcronymEn("NAMIS_APPS");
+			namisApplsCapability.setAcronymFr("NAMIS_APPS");
+			systemCapacityRepo.save(namisApplsCapability);
+
+			DatasetConfiguration namisApplsConfig = new DatasetConfiguration();
+			namisApplsConfig.setAcronym("NAMISMASTER");
+			namisApplsConfig.setGrantSystemCapability(namisApplsCapability);
+			namisApplsConfig.setNameEn("NAMIS Master dataset");
+			namisApplsConfig.setNameFr("Ensemble de donnees NAMIS Complet");
+			configRepo.save(namisApplsConfig);
+
 		}
 
 	}

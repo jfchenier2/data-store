@@ -41,4 +41,8 @@ public interface DatasetService {
 
 	public Dataset markAssessIfFirstTimeView(Dataset ds);
 
+	public long linkMatchingOrgEntities(Long id);
+
+	public List<DatasetProgram> getDatasetWarningPrograms(long id);
+
 }

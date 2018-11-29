@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import ca.gc.triagency.datastore.model.util.LocalizedParametersModel;
 
@@ -14,6 +16,10 @@ public class DatasetProgram implements LocalizedParametersModel {
 	private Long id;
 
 	private String extId;
+
+	@ManyToOne
+	@JoinColumn(name = "dataset_configuration_id")
+	private DatasetConfiguration datasetConfiguration;
 
 	private String nameEn;
 
@@ -49,5 +55,13 @@ public class DatasetProgram implements LocalizedParametersModel {
 
 	public void setExtId(String extId) {
 		this.extId = extId;
+	}
+
+	public DatasetConfiguration getDatasetConfiguration() {
+		return datasetConfiguration;
+	}
+
+	public void setDatasetConfiguration(DatasetConfiguration datasetConfiguration) {
+		this.datasetConfiguration = datasetConfiguration;
 	}
 }

@@ -1,4 +1,4 @@
-package ca.gc.triagency.datastore.repo;
+package ca.gc.triagency.datastore.repo.view;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

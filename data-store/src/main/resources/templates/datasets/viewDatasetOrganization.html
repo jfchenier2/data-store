@@ -42,7 +42,7 @@
 					<tbody>
 						<tr th:each="orgForLink : ${orgsForLink}">
 							<td><a th:href="@{'/entities/orgs/viewOrg'(id=${orgForLink.id})}" th:text="${orgForLink.getLocalizedAttribute('name')}"></a></td>
-							<td><form method="post" th:action="registerOrgLink"><input type="hidden" name="datasetOrgId" th:value="${org.id}" /><input type="hidden" name="orgId" th:value="${orgForLink.id}" /><input class="btn" type="submit" th:value="#{form.link}"/></form></td>
+							<td><form method="post" th:action="registerOrgLink"><input type="hidden" name="datasetOrgId" th:value="${org.id}" /><input type="hidden" name="orgId" th:value="${orgForLink.id}" /><input type="hidden" name="datasetId" th:value="${datasetId}" /><input class="btn" type="submit" th:value="#{form.link}"/></form></td>
 						</tr>
 					</tbody>
 					</table>

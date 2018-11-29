@@ -33,6 +33,7 @@ import ca.gc.triagency.datastore.model.DatasetOrganization;
 import ca.gc.triagency.datastore.model.DatasetPerson;
 import ca.gc.triagency.datastore.model.DatasetProgram;
 import ca.gc.triagency.datastore.model.EntityLinkOrganization;
+import ca.gc.triagency.datastore.model.EntityLinkProgram;
 import ca.gc.triagency.datastore.model.Organization;
 import ca.gc.triagency.datastore.model.file.AwardDatasetRow;
 import ca.gc.triagency.datastore.repo.DatasetAppRegistrationRepository;
@@ -44,6 +45,8 @@ import ca.gc.triagency.datastore.repo.DatasetPersonRepository;
 import ca.gc.triagency.datastore.repo.DatasetProgramRepository;
 import ca.gc.triagency.datastore.repo.DatasetRepository;
 import ca.gc.triagency.datastore.repo.EntityLinkOrgRepository;
+import ca.gc.triagency.datastore.repo.EntityLinkProgramRepository;
+import ca.gc.triagency.datastore.repo.OrganizationRepository;
 import ca.gc.triagency.datastore.service.DatasetService;
 
 @Service
@@ -58,7 +61,13 @@ public class DatasetServiceImpl implements DatasetService {
 	DatasetApplicationRepository datasetApplicationRepo;
 
 	@Autowired
+	OrganizationRepository orgRepo;
+
+	@Autowired
 	EntityLinkOrgRepository entityLinkOrgRepo;
+
+	@Autowired
+	EntityLinkProgramRepository entityLinkProgramRepo;
 
 	@Autowired
 	DatasetProgramRepository datasetProgramRepo;
@@ -335,6 +344,39 @@ public class DatasetServiceImpl implements DatasetService {
 			ds.setDatasetStatus(DatasetStatus.ASSESS);
 			retval = datasetRepo.save(ds);
 		}
+		return retval;
+
+	}
+
+	@Override
+	public long linkMatchingOrgEntities(Long id) {
+		long retval = 0;
+		List<Organization> orgs = orgRepo.findAll();
+		for (DatasetOrganization datasetOrg : getDatasetWarningOrgs(id)) {
+			for (Organization targetOrg : orgs) {
+				if (datasetOrg.getNameEn().compareTo(targetOrg.getNameEn()) == 0) {
+					linkDatasetOrg(datasetOrg, targetOrg);
+					retval++;
+					break;
+				}
+			}
+
+		}
+		return retval;
+	}
+
+	@Override
+	public List<DatasetProgram> getDatasetWarningPrograms(long id) {
+		Collection<Long> extIds = new ArrayList<Long>();
+		extIds.add(new Long(0));
+		Dataset dataset = datasetRepo.getOne(id);
+		long configId = dataset.getDatasetConfiguration().getId();
+		for (EntityLinkProgram link : entityLinkProgramRepo.findByDatasetConfigurationId(configId)) {
+			extIds.add(link.getExtId());
+			// String asdf = "";
+
+		}
+		List<DatasetProgram> retval = datasetProgramRepo.findByDatasetConfigurationIdAndExtIdNotIn(configId, extIds);
 		return retval;
 
 	}

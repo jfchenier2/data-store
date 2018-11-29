@@ -71,6 +71,7 @@ public class DatasetController {
 		ds = datasetService.markAssessIfFirstTimeView(ds);
 		model.addAttribute("dataset", ds);
 		model.addAttribute("warningOrgs", datasetService.getDatasetWarningOrgs(id));
+		model.addAttribute("warningProgs", datasetService.getDatasetWarningPrograms(id));
 
 		return "datasets/viewDataset";
 	}
@@ -82,8 +83,9 @@ public class DatasetController {
 	}
 
 	@GetMapping(value = "/viewDatasetOrg")
-	public String viewAgency(@RequestParam("id") long id, Model model) {
+	public String viewDatasetOrg(@RequestParam("id") long id, @RequestParam("datasetId") long datasetId, Model model) {
 		DatasetOrganization org = datasetService.getDatasetOrganization(id);
+		model.addAttribute("datasetId", datasetId);
 		model.addAttribute("org", org);
 		if (org.getLink() == null) {
 			model.addAttribute("orgsForLink", dataService.getAllOrganizations());
@@ -113,11 +115,18 @@ public class DatasetController {
 	}
 
 	@PostMapping(value = "/registerOrgLink")
-	public String registerOrgLinkPost(@ModelAttribute("datasetOrgId") Long id, @ModelAttribute("orgId") Long orgId) {
+	public String registerOrgLinkPost(@ModelAttribute("datasetOrgId") Long id, @ModelAttribute("orgId") Long orgId,
+			@ModelAttribute("datasetId") Long datasetId) {
 		DatasetOrganization dsOrg = datasetService.getDatasetOrganization(id);
 		Organization org = dataService.getOrganization(orgId);
 		datasetService.linkDatasetOrg(dsOrg, org);
-		return "redirect:viewDatasetOrg?id=" + id;
+		return "redirect:viewDataset?id=" + datasetId;
+	}
+
+	@PostMapping(value = "/linkMatchingOrgEntities")
+	public String linkMatchingOrgEntitiesPost(@ModelAttribute("id") Long id) {
+		datasetService.linkMatchingOrgEntities(id);
+		return "redirect:viewDataset?id=" + id;
 	}
 
 	@PostMapping(value = "/expressCreateAndSetLink")

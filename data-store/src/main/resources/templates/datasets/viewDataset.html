@@ -39,43 +39,126 @@
 			<div class="col-sm-10" th:text="${dataset.currentRow}"></div>
 		</div>
 		
+		
 		<div class="form-group row">
-			<div class="col-sm-2 col-form-label" th:utext="#{dataset.datasetWarnings}">Data-set Integration Warnings</div>
-			<div th:if="${not #lists.isEmpty(warningOrgs)}">
-				<div class="col-sm-10 alert-warning" th:utext="${dataset.datasetWarningsDetected}">Warnings Detected</div>
+			<div class="col-sm-4 col-form-label"><h4 th:utext="#{dataset.datasetIntegrationAnalysis}">Data-set Integration Analysis</h4></div>
+		</div>
+		<div class="panel">
+			<div class="panel-heading" id="headingProgs">
+				<div class="col-sm-3">Program Entity Integration:</div>
+				<div class="col-sm-9">
+					<div th:if="${not #lists.isEmpty(warningProgs)}">
+						<span class="alert-warning">Warnings Detected</span>
+						<a role="button" class="btn btn-warning" data-toggle="collapse" href="#collapsePrograms" aria-expanded="true" aria-controls="collapsePrograms" >
+						  Investigate
+						</a>
+					</div>
+					<div th:if="${#lists.isEmpty(warningProgs)}">
+						<span class="alert-success">Programs linked</span>					
+					</div>
+				</div>
 			</div>
-			<div th:if="${#lists.isEmpty(warningOrgs)}">
-				<div class="col-sm-10 alert-success" th:utext="#{dataset.noWarningsSuccess}">Success! No warnings</div>
+			<div id="collapsePrograms" class="collapse" th:classappend="${not #lists.isEmpty(warningProgs)}? in : x" aria-labelledby="headingProgs">
+				<div class="panel-body">
+					<div th:if="${not #lists.isEmpty(warningProgs)}">
+						<div class="col-sm-4 col-form-label"><h4  th:utext="#{dataset.unlinkedProgs}">Unlinked Programs Warnings</h4></div>
+						<div class="form-group row">
+							<div class="col-sm-10">
+								<table id="datasetPrograms" style="width: 100%;">
+									<thead>
+										<tr>
+											<td>Name</td>
+											<td>Linked Entity</td>
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:each="dsProg : ${warningProgs}">
+											<td><a th:href="@{'viewDatasetProgram'(id=${dsProg.id},datasetId=${dataset.id})}" th:text="${dsProg.getLocalizedAttribute('name')}"></a></td>
+											<td th:text="todo"></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-sm-3">
+							<p>Search registered programs for exact matches.</p>
+							<form th:action="@{linkMatchingProgEntities}" method="POST"><input type="hidden" name="id" th:value="${dataset.id}"/><input type="submit" th:value="#{dataset.action.linkMatchingEntiites}" class="btn btn-primary" /></form>
+						</div>
+						<div class="col-sm-6">
+							<p>In order to quickly process these unlinked Programs, click on "Express Approve".  This will create the corresponding Entities and apply the appropriate links.</p>
+							<form th:action="@{expressCreateAndSetLinkPrograms}" method="POST"><input type="hidden" name="id" th:value="${dataset.id}"/><input type="submit" th:value="#{dataset.action.expressCreateAndLink}" class="btn btn-primary" /></form>
+						</div>
+					</div>
+				
+					<div th:if="${#lists.isEmpty(warningProgs)}">
+						<div class="col-sm-10 alert-success" th:utext="#{dataset.noWarningsSuccess}">Success! No warnings</div>
+					</div>
+
+				</div>
 			</div>
 		</div>
+		
+		<div class="panel">
+			<div class="panel-heading" id="headingOne">
+				<div class="col-sm-3">Organization Entity Integration Analysis:</div>
+				<div class="col-sm-9">
+					<div th:if="${not #lists.isEmpty(warningOrgs)}">
+						<span class="alert-warning">Warnings Detected</span>
+						<a role="button" class="btn btn-warning" data-toggle="collapse" href="#collapseOrgs" aria-expanded="true" aria-controls="collapseOrgs" >
+						  Investigate
+						</a>
+					</div>
+					<div th:if="${#lists.isEmpty(warningOrgs)}">
+						<span class="alert-success">Organizations linked</span>					
+					</div>
+				</div>
+			</div>
+			<div id="collapseOrgs" class="collapse" th:classappend="${not #lists.isEmpty(warningOrgs)}? in : x" aria-labelledby="headingOne">
+				<div class="panel-body">
+					<div th:if="${not #lists.isEmpty(warningOrgs)}">
+						<div class="col-sm-4 col-form-label"><h4  th:utext="#{dataset.unlinkedOrgs}">Unlinked Organization Warnings</h4></div>
+						<div class="form-group row">
+							<div class="col-sm-10">
+								<table id="datasetPrograms" style="width: 100%;">
+									<thead>
+										<tr>
+											<td>Name</td>
+											<td>Linked Entity</td>
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:each="dsOrg : ${warningOrgs}">
+											<td><a th:href="@{'viewDatasetOrg'(id=${dsOrg.id},datasetId=${dataset.id})}" th:text="${dsOrg.getLocalizedAttribute('name')}"></a></td>
+											<td th:text="todo"></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-sm-3">
+							<p>Search registered programs for exact matches.</p>
+							<form th:action="@{linkMatchingOrgEntities}" method="POST"><input type="hidden" name="id" th:value="${dataset.id}"/><input type="submit" th:value="#{dataset.action.linkMatchingEntiites}" class="btn btn-primary" /></form>
+						</div>
+						<div class="col-sm-6">
+							<p>In order to quickly process these unlinked Organizations, click on "Express Approve".  This will create the corresponding Entities and apply the appropriate links.</p>
+							<form th:action="@{expressCreateAndSetLink}" method="POST"><input type="hidden" name="id" th:value="${dataset.id}"/><input type="submit" th:value="#{dataset.action.expressCreateAndLink}" class="btn btn-primary" /></form>
+						</div>
+					</div>
+				
+					<div th:if="${#lists.isEmpty(warningOrgs)}">
+						<div class="col-sm-10 alert-success" th:utext="#{dataset.noWarningsSuccess}">Success! No warnings</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		
+		
 		<div th:if="${#lists.isEmpty(warningOrgs)}">
 			<div class="form-group row">
 				<div class="col-sm-2 col-form-label" th:utext="#{form.clickApprove}">Click to approve</div>
 				<div class="col-sm-10"><form th:method="post" th:action="@{approveDataset}"><input type="hidden" name="id" th:value="${dataset.id}" /><input type="submit" class="btn" th:value="#{action.approve}"/></form></div>
 			</div>
-		</div>
-		<div th:if="${not #lists.isEmpty(warningOrgs)}">
-			<div class="col-sm-2 col-form-label" th:utext="#{dataset.unlinkedOrgWarnings}">Unlinked Organization Warnings</div>
-			<div class="form-group row">
-				<div class="col-sm-10">
-					<table id="datasetPrograms">
-						<thead>
-							<tr>
-								<td>Name</td>
-								<td>Linked Entity</td>
-							</tr>
-						</thead>
-						<tbody>
-							<tr th:each="dsOrg : ${warningOrgs}">
-								<td><a th:href="@{'viewDatasetOrg'(id=${dsOrg.id})}" th:text="${dsOrg.getLocalizedAttribute('name')}"></a></td>
-								<td th:text="todo"></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-			<p>In order to quickly process these Organizations, click on "Express Approve".  This will create the corresponding Entities and appropriate links to the target Dataset Configuration.</p>
-			<form th:action="@{expressCreateAndSetLink}" method="POST"><input type="hidden" name="id" th:value="${dataset.id}"/><input type="submit" th:value="#{action.expressCreateAndLink}" class="btn btn-primary" /></form>
 		</div>
 		
 	</div>

@@ -9,4 +9,6 @@ import ca.gc.triagency.datastore.model.Program;
 public interface ProgramRepository extends JpaRepository<Program, Long> {
 	List<Program> findByLeadAgencyId(long id);
 
+	List<Program> findByLeadAgencyAcronymEn(String agencyAcronym);
+
 }

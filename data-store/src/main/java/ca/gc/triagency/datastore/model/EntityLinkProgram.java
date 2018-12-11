@@ -17,7 +17,7 @@ public class EntityLinkProgram {
 	@JoinColumn(name = "dataset_config_id")
 	private DatasetConfiguration datasetConfiguration;
 
-	private Long extId;
+	private String extId;
 
 	@ManyToOne
 	@JoinColumn(name = "program_id")
@@ -27,11 +27,11 @@ public class EntityLinkProgram {
 		return id;
 	}
 
-	public Long getExtId() {
+	public String getExtId() {
 		return extId;
 	}
 
-	public void setExtId(Long extId) {
+	public void setExtId(String extId) {
 		this.extId = extId;
 	}
 

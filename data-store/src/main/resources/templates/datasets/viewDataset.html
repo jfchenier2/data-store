@@ -80,12 +80,16 @@
 								</table>
 							</div>
 						</div>
-						<div class="col-sm-3">
-							<p>Search registered programs for exact matches.</p>
+						<div class="col-sm-2">
+							<p><span class="h4" style="padding-right: 4px;">1 - </span>Match entities using existing Entity Links external ID attribute.</p>
+							<form th:action="@{linkToProgramEntityLinks}" method="POST"><input type="hidden" name="id" th:value="${dataset.id}"/><input type="submit" th:value="#{dataset.action.linkToProgramEntityLinks}" class="btn btn-primary" /></form>
+						</div>
+						<div class="col-sm-2">
+							<p><span class="h4" style="padding-right: 4px;">2 - </span>Search registered programs for exact matches.</p>
 							<form th:action="@{linkMatchingProgEntities}" method="POST"><input type="hidden" name="id" th:value="${dataset.id}"/><input type="submit" th:value="#{dataset.action.linkMatchingEntiites}" class="btn btn-primary" /></form>
 						</div>
-						<div class="col-sm-6">
-							<p>In order to quickly process these unlinked Programs, click on "Express Approve".  This will create the corresponding Entities and apply the appropriate links.</p>
+						<div class="col-sm-5">
+							<p><span class="h4" style="padding-right: 4px;">3 - </span>In order to quickly process these unlinked Programs, click on "Express Approve".  This will create the corresponding Entities and the related Links.</p>
 							<form th:action="@{expressCreateAndSetLinkPrograms}" method="POST"><input type="hidden" name="id" th:value="${dataset.id}"/><input type="submit" th:value="#{dataset.action.expressCreateAndLink}" class="btn btn-primary" /></form>
 						</div>
 					</div>
@@ -119,7 +123,7 @@
 						<div class="col-sm-4 col-form-label"><h4  th:utext="#{dataset.unlinkedOrgs}">Unlinked Organization Warnings</h4></div>
 						<div class="form-group row">
 							<div class="col-sm-10">
-								<table id="datasetPrograms" style="width: 100%;">
+								<table id="datasetOrgs" style="width: 100%;">
 									<thead>
 										<tr>
 											<td>Name</td>
@@ -135,12 +139,16 @@
 								</table>
 							</div>
 						</div>
-						<div class="col-sm-3">
-							<p>Search registered programs for exact matches.</p>
+						<div class="col-sm-2">
+							<p><span class="h4" style="padding-right: 4px;">1 - </span>Match entities using existing Entity Links external ID attribute.</p>
+							<form th:action="@{linkToOrgEntityLinks}" method="POST"><input type="hidden" name="id" th:value="${dataset.id}"/><input type="submit" th:value="#{dataset.action.linkToOrgEntityLinks}" class="btn btn-primary" /></form>
+						</div>
+						<div class="col-sm-2">
+							<p><span class="h4" style="padding-right: 4px;">2 - </span>Search registered programs for exact matches.</p>
 							<form th:action="@{linkMatchingOrgEntities}" method="POST"><input type="hidden" name="id" th:value="${dataset.id}"/><input type="submit" th:value="#{dataset.action.linkMatchingEntiites}" class="btn btn-primary" /></form>
 						</div>
-						<div class="col-sm-6">
-							<p>In order to quickly process these unlinked Organizations, click on "Express Approve".  This will create the corresponding Entities and apply the appropriate links.</p>
+						<div class="col-sm-5">
+							<p><span class="h4" style="padding-right: 4px;">3 - </span>In order to quickly process these unlinked Organizations, click on "Express Approve".  This will create the corresponding Entities and apply the appropriate links.</p>
 							<form th:action="@{expressCreateAndSetLink}" method="POST"><input type="hidden" name="id" th:value="${dataset.id}"/><input type="submit" th:value="#{dataset.action.expressCreateAndLink}" class="btn btn-primary" /></form>
 						</div>
 					</div>
@@ -154,10 +162,10 @@
 		</div>
 		
 		
-		<div th:if="${#lists.isEmpty(warningOrgs)}">
+		<div th:if="${#lists.isEmpty(warningOrgs) and #lists.isEmpty(warningProgs) and #strings.equals(dataset.datasetStatus, 'ASSESS')}">
 			<div class="form-group row">
 				<div class="col-sm-2 col-form-label" th:utext="#{form.clickApprove}">Click to approve</div>
-				<div class="col-sm-10"><form th:method="post" th:action="@{approveDataset}"><input type="hidden" name="id" th:value="${dataset.id}" /><input type="submit" class="btn" th:value="#{action.approve}"/></form></div>
+				<div class="col-sm-4"><form th:method="post" th:action="@{approveDataset}"><input type="hidden" name="id" th:value="${dataset.id}" /><input type="submit" class="btn btn-primary" th:value="#{action.approve}"/></form></div>
 			</div>
 		</div>
 		

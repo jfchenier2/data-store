@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
+import ca.gc.triagency.datastore.model.Agency;
 import ca.gc.triagency.datastore.model.Dataset;
 import ca.gc.triagency.datastore.model.Dataset.DatasetStatus;
 import ca.gc.triagency.datastore.model.DatasetAppRegistrationRole;
@@ -35,7 +36,9 @@ import ca.gc.triagency.datastore.model.DatasetProgram;
 import ca.gc.triagency.datastore.model.EntityLinkOrganization;
 import ca.gc.triagency.datastore.model.EntityLinkProgram;
 import ca.gc.triagency.datastore.model.Organization;
+import ca.gc.triagency.datastore.model.Program;
 import ca.gc.triagency.datastore.model.file.AwardDatasetRow;
+import ca.gc.triagency.datastore.repo.AgencyRepository;
 import ca.gc.triagency.datastore.repo.DatasetAppRegistrationRepository;
 import ca.gc.triagency.datastore.repo.DatasetAppRegistrationRoleRepository;
 import ca.gc.triagency.datastore.repo.DatasetApplicationRepository;
@@ -47,6 +50,7 @@ import ca.gc.triagency.datastore.repo.DatasetRepository;
 import ca.gc.triagency.datastore.repo.EntityLinkOrgRepository;
 import ca.gc.triagency.datastore.repo.EntityLinkProgramRepository;
 import ca.gc.triagency.datastore.repo.OrganizationRepository;
+import ca.gc.triagency.datastore.repo.ProgramRepository;
 import ca.gc.triagency.datastore.service.DatasetService;
 
 @Service
@@ -56,6 +60,12 @@ public class DatasetServiceImpl implements DatasetService {
 
 	@Autowired
 	DatasetRepository datasetRepo;
+
+	@Autowired
+	AgencyRepository agencyRepo;
+
+	@Autowired
+	ProgramRepository programRepo;
 
 	@Autowired
 	DatasetApplicationRepository datasetApplicationRepo;
@@ -126,6 +136,15 @@ public class DatasetServiceImpl implements DatasetService {
 
 	@Override
 	public void uploadData(Dataset dataset) {
+		List<Agency> agencies = agencyRepo.findAll();
+		Agency SSHRC = null, NSERC = null;
+		for (Agency agency : agencies) {
+			if (agency.getAcronymEn().compareTo("NSERC") == 0) {
+				NSERC = agency;
+			} else if (agency.getAcronymEn().compareTo("SSHRC") == 0) {
+				SSHRC = agency;
+			}
+		}
 		HashMap<String, DatasetProgram> programHash = new HashMap<String, DatasetProgram>();
 		HashMap<String, DatasetAppRegistrationRole> roleHash = new HashMap<String, DatasetAppRegistrationRole>();
 		HashMap<Long, DatasetOrganization> orgHash = new HashMap<Long, DatasetOrganization>();
@@ -156,6 +175,12 @@ public class DatasetServiceImpl implements DatasetService {
 					currentProgram.setExtId(row.getProgramId());
 					currentProgram.setNameEn(row.getProgramEn());
 					currentProgram.setNameFr(row.getProgramFr());
+					if (row.getSource().compareTo("NAMIS") == 0) {
+						currentProgram.setLeadAgency(NSERC);
+					} else {
+						currentProgram.setLeadAgency(SSHRC);
+					}
+					currentProgram.setDataset(dataset);
 					currentProgram = datasetProgramRepo.save(currentProgram);
 					programHash.put(currentProgram.getExtId(), currentProgram);
 					System.out.println("created DatasetProgram: " + currentProgram);
@@ -207,7 +232,7 @@ public class DatasetServiceImpl implements DatasetService {
 				currentOrg.setExtId(rowOrgId);
 				currentOrg.setNameEn(row.getOrgNameEn());
 				currentOrg.setNameFr(row.getOrgNameFr());
-				currentOrg.setDatasetConfiguration(dataset.getDatasetConfiguration());
+				currentOrg.setDataset(dataset);
 				currentOrg = datasetOrgRepo.save(currentOrg);
 				orgHash.put(currentOrg.getExtId(), currentOrg);
 				System.out.println("created DatasetOrganization: " + currentOrg);
@@ -279,21 +304,6 @@ public class DatasetServiceImpl implements DatasetService {
 	}
 
 	@Override
-	public List<DatasetOrganization> getDatasetWarningOrgs(long id) {
-		Collection<Long> extIds = new ArrayList<Long>();
-		extIds.add(new Long(0));
-		Dataset dataset = datasetRepo.getOne(id);
-		long configId = dataset.getDatasetConfiguration().getId();
-		for (EntityLinkOrganization link : entityLinkOrgRepo.findByDatasetConfigurationId(configId)) {
-			extIds.add(link.getExtId());
-			// String asdf = "";
-
-		}
-		List<DatasetOrganization> retval = datasetOrgRepo.findByDatasetConfigurationIdAndExtIdNotIn(configId, extIds);
-		return retval;
-	}
-
-	@Override
 	public DatasetProgram getDatasetProgram(long id) {
 		return datasetProgramRepo.getOne(id);
 	}
@@ -313,15 +323,38 @@ public class DatasetServiceImpl implements DatasetService {
 	}
 
 	@Override
+	public Program createProgramFromDatasetProg(DatasetProgram prog) {
+		Program newProg = new Program();
+		newProg.setNameEn(prog.getNameEn());
+		newProg.setNameFr(prog.getNameFr());
+		newProg.setLeadAgency(prog.getLeadAgency());
+		return newProg;
+
+	}
+
+	@Override
 	public void linkDatasetOrg(DatasetOrganization org, Organization newOrg) {
 		EntityLinkOrganization link = new EntityLinkOrganization();
-		link.setDatasetConfiguration(org.getDatasetConfiguration());
+		link.setDatasetConfiguration(org.getDataset().getDatasetConfiguration());
 		link.setExtId(org.getExtId());
 		link.setOrg(newOrg);
 		entityLinkOrgRepo.save(link);
 
-		org.setLink(link);
+		org.setEntityLink(link);
 		datasetOrgRepo.save(org);
+
+	}
+
+	@Override
+	public void linkDatasetProgram(DatasetProgram prog, Program newProg) {
+		EntityLinkProgram link = new EntityLinkProgram();
+		link.setDatasetConfiguration(prog.getDataset().getDatasetConfiguration());
+		link.setExtId(prog.getExtId());
+		link.setProgram(newProg);
+		entityLinkProgramRepo.save(link);
+
+		prog.setEntityLink(link);
+		datasetProgramRepo.save(prog);
 
 	}
 
@@ -352,7 +385,7 @@ public class DatasetServiceImpl implements DatasetService {
 	public long linkMatchingOrgEntities(Long id) {
 		long retval = 0;
 		List<Organization> orgs = orgRepo.findAll();
-		for (DatasetOrganization datasetOrg : getDatasetWarningOrgs(id)) {
+		for (DatasetOrganization datasetOrg : getUnlinkedDatasetOrgs(id)) {
 			for (Organization targetOrg : orgs) {
 				if (datasetOrg.getNameEn().compareTo(targetOrg.getNameEn()) == 0) {
 					linkDatasetOrg(datasetOrg, targetOrg);
@@ -366,19 +399,73 @@ public class DatasetServiceImpl implements DatasetService {
 	}
 
 	@Override
-	public List<DatasetProgram> getDatasetWarningPrograms(long id) {
-		Collection<Long> extIds = new ArrayList<Long>();
-		extIds.add(new Long(0));
-		Dataset dataset = datasetRepo.getOne(id);
-		long configId = dataset.getDatasetConfiguration().getId();
-		for (EntityLinkProgram link : entityLinkProgramRepo.findByDatasetConfigurationId(configId)) {
-			extIds.add(link.getExtId());
-			// String asdf = "";
+	public long linkMatchingProgramEntities(Long id) {
+		long retval = 0;
+		List<Program> progs = programRepo.findAll();
+		for (DatasetProgram datasetProg : getUnlinkedDatasetPrograms(id)) {
+			for (Program targetProg : progs) {
+				if (datasetProg.getNameEn().compareTo(targetProg.getNameEn()) == 0) {
+					linkDatasetProgram(datasetProg, targetProg);
+					retval++;
+					break;
+				}
+			}
 
 		}
-		List<DatasetProgram> retval = datasetProgramRepo.findByDatasetConfigurationIdAndExtIdNotIn(configId, extIds);
+		return retval;
+	}
+
+	@Override
+	public List<DatasetOrganization> getUnlinkedDatasetOrgs(long datasetId) {
+		List<DatasetOrganization> retval = datasetOrgRepo.findByDatasetIdAndEntityLinkIsNull(datasetId);
+		return retval;
+	}
+
+	@Override
+	public List<DatasetProgram> getUnlinkedDatasetPrograms(long datasetId) {
+		List<DatasetProgram> retval = datasetProgramRepo.findByDatasetIdAndEntityLinkIsNull(datasetId);
 		return retval;
 
+	}
+
+	@Override
+	public long linkToProgramEntityLinks(Long datasetId) {
+		long retval = 0;
+		Dataset dataset = getDataset(datasetId);
+		List<EntityLinkProgram> links = entityLinkProgramRepo
+				.findByDatasetConfigurationId(dataset.getDatasetConfiguration().getId());
+		for (DatasetProgram datasetProg : getUnlinkedDatasetPrograms(datasetId)) {
+			for (EntityLinkProgram link : links) {
+				if (datasetProg.getExtId().compareTo(link.getExtId()) == 0) {
+					datasetProg.setEntityLink(link);
+					datasetProgramRepo.save(datasetProg);
+					retval++;
+					break;
+				}
+			}
+
+		}
+		return retval;
+	}
+
+	@Override
+	public long linkToOrgEntityLinks(Long datasetId) {
+		long retval = 0;
+		Dataset dataset = getDataset(datasetId);
+		List<EntityLinkOrganization> links = entityLinkOrgRepo
+				.findByDatasetConfigurationId(dataset.getDatasetConfiguration().getId());
+		for (DatasetOrganization datasetOrg : getUnlinkedDatasetOrgs(datasetId)) {
+			for (EntityLinkOrganization link : links) {
+				if (datasetOrg.getExtId().compareTo(link.getExtId()) == 0) {
+					datasetOrg.setEntityLink(link);
+					datasetOrgRepo.save(datasetOrg);
+					retval++;
+					break;
+				}
+			}
+
+		}
+		return retval;
 	}
 
 }

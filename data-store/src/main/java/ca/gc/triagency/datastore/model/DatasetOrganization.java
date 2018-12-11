@@ -15,21 +15,19 @@ public class DatasetOrganization implements LocalizedParametersModel {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
+	@ManyToOne
+	@JoinColumn(name = "entity_link_id", nullable = true)
+	private EntityLinkOrganization entityLink;
+
 	private Long extId;
 
 	private String nameEn;
 
 	private String nameFr;
-	// private String address;
-	// private String contactInfo;
 
 	@ManyToOne
-	@JoinColumn(name = "dataset_configuration_id")
-	private DatasetConfiguration datasetConfiguration;
-
-	@ManyToOne
-	@JoinColumn(name = "entity_link_organization_id", nullable = true)
-	private EntityLinkOrganization link;
+	@JoinColumn(name = "dataset_id")
+	private Dataset dataset;
 
 	@Override
 	public String toString() {
@@ -64,19 +62,19 @@ public class DatasetOrganization implements LocalizedParametersModel {
 		this.extId = extId;
 	}
 
-	public DatasetConfiguration getDatasetConfiguration() {
-		return datasetConfiguration;
+	public EntityLinkOrganization getEntityLink() {
+		return entityLink;
 	}
 
-	public void setDatasetConfiguration(DatasetConfiguration datasetConfiguration) {
-		this.datasetConfiguration = datasetConfiguration;
+	public void setEntityLink(EntityLinkOrganization entityLink) {
+		this.entityLink = entityLink;
 	}
 
-	public EntityLinkOrganization getLink() {
-		return link;
+	public Dataset getDataset() {
+		return dataset;
 	}
 
-	public void setLink(EntityLinkOrganization link) {
-		this.link = link;
+	public void setDataset(Dataset dataset) {
+		this.dataset = dataset;
 	}
 }

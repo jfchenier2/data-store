@@ -18,12 +18,20 @@ public class DatasetProgram implements LocalizedParametersModel {
 	private String extId;
 
 	@ManyToOne
-	@JoinColumn(name = "dataset_configuration_id")
-	private DatasetConfiguration datasetConfiguration;
+	@JoinColumn(name = "agency_id")
+	private Agency leadAgency;
+
+	@ManyToOne
+	@JoinColumn(name = "dataset_id")
+	private Dataset dataset;
 
 	private String nameEn;
 
 	private String nameFr;
+
+	@ManyToOne
+	@JoinColumn(name = "entity_link_id", nullable = true)
+	private EntityLinkProgram entityLink;
 
 	public String toString() {
 		return "DatasetProgram: " + id + " : " + extId + " : " + nameEn + " : " + nameFr;
@@ -57,11 +65,28 @@ public class DatasetProgram implements LocalizedParametersModel {
 		this.extId = extId;
 	}
 
-	public DatasetConfiguration getDatasetConfiguration() {
-		return datasetConfiguration;
+	public Dataset getDataset() {
+		return dataset;
 	}
 
-	public void setDatasetConfiguration(DatasetConfiguration datasetConfiguration) {
-		this.datasetConfiguration = datasetConfiguration;
+	public void setDataset(Dataset dataset) {
+		this.dataset = dataset;
 	}
+
+	public EntityLinkProgram getEntityLink() {
+		return entityLink;
+	}
+
+	public void setEntityLink(EntityLinkProgram entityLink) {
+		this.entityLink = entityLink;
+	}
+
+	public Agency getLeadAgency() {
+		return leadAgency;
+	}
+
+	public void setLeadAgency(Agency leadAgency) {
+		this.leadAgency = leadAgency;
+	}
+
 }

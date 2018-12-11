@@ -16,9 +16,10 @@ import javax.persistence.ManyToOne;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import ca.gc.triagency.datastore.form.ProgramForm;
+import ca.gc.triagency.datastore.model.util.LocalizedParametersModel;
 
 @Entity
-public class Program {
+public class Program implements LocalizedParametersModel {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;

@@ -8,6 +8,7 @@ import ca.gc.triagency.datastore.model.DatasetConfiguration;
 import ca.gc.triagency.datastore.model.DatasetOrganization;
 import ca.gc.triagency.datastore.model.DatasetProgram;
 import ca.gc.triagency.datastore.model.Organization;
+import ca.gc.triagency.datastore.model.Program;
 
 public interface DatasetService {
 
@@ -27,8 +28,6 @@ public interface DatasetService {
 
 	public Dataset configureNewDatasetFromFilename(String filename);
 
-	public List<DatasetOrganization> getDatasetWarningOrgs(long id);
-
 	public DatasetProgram getDatasetProgram(long id);
 
 	public DatasetOrganization getDatasetOrganization(long id);
@@ -43,6 +42,18 @@ public interface DatasetService {
 
 	public long linkMatchingOrgEntities(Long id);
 
-	public List<DatasetProgram> getDatasetWarningPrograms(long id);
+	public List<DatasetProgram> getUnlinkedDatasetPrograms(long id);
+
+	List<DatasetOrganization> getUnlinkedDatasetOrgs(long id);
+
+	public void linkDatasetProgram(DatasetProgram dsProg, Program prog);
+
+	public Program createProgramFromDatasetProg(DatasetProgram prog);
+
+	public long linkMatchingProgramEntities(Long id);
+
+	public long linkToProgramEntityLinks(Long datasetId);
+
+	public long linkToOrgEntityLinks(Long datasetId);
 
 }

@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import ca.gc.triagency.datastore.model.Agency;
@@ -33,7 +35,27 @@ public class DataAccessServiceImpl implements DataAccessService {
 
 	@Override
 	public List<Program> getAllPrograms() {
-		return programRepo.findAll();
+		boolean isAdmin = false, isSSHRC = false, isNSERC = false;
+		String agencyAcronym = null;
+		for (GrantedAuthority role : SecurityContextHolder.getContext().getAuthentication().getAuthorities()) {
+			if (role.getAuthority().compareTo("ROLE_ADMIN") == 0) {
+				isAdmin = true;
+			} else if (role.getAuthority().compareTo("ROLE_SSHRC") == 0) {
+				isSSHRC = true;
+				agencyAcronym = "SSHRC";
+
+			} else if (role.getAuthority().compareTo("ROLE_NSERC") == 0) {
+				isNSERC = true;
+				agencyAcronym = "NSERC";
+			}
+		}
+		List<Program> retval = null;
+		if (isAdmin) {
+			retval = programRepo.findAll();
+		} else {
+			retval = programRepo.findByLeadAgencyAcronymEn(agencyAcronym);
+		}
+		return retval;
 	}
 
 	@Override

@@ -30,7 +30,10 @@
 				<li class="nav-item" th:with="currentUrl=(${@currentUrlWithoutParam.apply('lang')})">
    					<a class="nav-link" th:href="@{${currentUrl}(lang=#{lang.otherLocale})}" th:text="#{lang.otherLanguage}">click here</a>
 				</li>
-			</ul>
+				<li class="nav-item" th:with="currentUrl=(${@currentUrlWithoutParam.apply('lang')})">
+					<form th:action="@{/logout}" method="post"><input type="submit" value="Sign Out"/ class="btn"></form>
+				</li>
+   			</ul>
 		</nav>
 	</div>
 	<div class="container"><img src="/images/sig-blk-en.svg" height="40px;" style="padding: 4px;"/></div>	

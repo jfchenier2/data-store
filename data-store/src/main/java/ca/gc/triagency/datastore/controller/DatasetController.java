@@ -21,6 +21,7 @@ import ca.gc.triagency.datastore.form.ProgramForm;
 import ca.gc.triagency.datastore.model.Agency;
 import ca.gc.triagency.datastore.model.Dataset;
 import ca.gc.triagency.datastore.model.DatasetOrganization;
+import ca.gc.triagency.datastore.model.DatasetProgram;
 import ca.gc.triagency.datastore.model.Organization;
 import ca.gc.triagency.datastore.model.Program;
 import ca.gc.triagency.datastore.service.DataAccessService;
@@ -70,8 +71,8 @@ public class DatasetController {
 		Dataset ds = datasetService.getDataset(id);
 		ds = datasetService.markAssessIfFirstTimeView(ds);
 		model.addAttribute("dataset", ds);
-		model.addAttribute("warningOrgs", datasetService.getDatasetWarningOrgs(id));
-		model.addAttribute("warningProgs", datasetService.getDatasetWarningPrograms(id));
+		model.addAttribute("warningOrgs", datasetService.getUnlinkedDatasetOrgs(id));
+		model.addAttribute("warningProgs", datasetService.getUnlinkedDatasetPrograms(id));
 
 		return "datasets/viewDataset";
 	}
@@ -87,11 +88,41 @@ public class DatasetController {
 		DatasetOrganization org = datasetService.getDatasetOrganization(id);
 		model.addAttribute("datasetId", datasetId);
 		model.addAttribute("org", org);
-		if (org.getLink() == null) {
+		if (org.getEntityLink() == null) {
 			model.addAttribute("orgsForLink", dataService.getAllOrganizations());
 		}
 
 		return "datasets/viewDatasetOrganization";
+	}
+
+	@GetMapping(value = "/viewDatasetProgram")
+	public String viewDatasetProgram(@RequestParam("id") long id, Model model) {
+		DatasetProgram prog = datasetService.getDatasetProgram(id);
+		model.addAttribute("datasetId", prog.getDataset().getId());
+		model.addAttribute("prog", prog);
+		if (prog.getEntityLink() == null) {
+			model.addAttribute("progsForLink", dataService.getAllPrograms());
+		}
+
+		return "datasets/viewDatasetProgram";
+	}
+
+	@PostMapping(value = "/registerProgLink")
+	public String registerProgramLinkPost(@ModelAttribute("datasetProgramId") Long id,
+			@ModelAttribute("progId") Long progId) {
+		DatasetProgram dsProg = datasetService.getDatasetProgram(id);
+		Program prog = dataService.getProgram(progId);
+		datasetService.linkDatasetProgram(dsProg, prog);
+		return "redirect:viewDataset?id=" + dsProg.getDataset().getId();
+	}
+
+	@PostMapping(value = "/createProgFromDataset")
+	public String createProgramFromDatasetPost(@ModelAttribute("id") Long id) {
+		DatasetProgram prog = datasetService.getDatasetProgram(id);
+		Program newProg = datasetService.createProgramFromDatasetProg(prog);
+		dataService.saveProgram(newProg);
+		datasetService.linkDatasetProgram(prog, newProg);
+		return "redirect:viewDatasetProgram?id=" + id;
 	}
 
 	@PostMapping(value = "/createOrgFromDataset")
@@ -123,15 +154,44 @@ public class DatasetController {
 		return "redirect:viewDataset?id=" + datasetId;
 	}
 
+	@PostMapping(value = "/linkToProgramEntityLinks")
+	public String linkToProgramEntityLinksPost(@ModelAttribute("id") Long datasetId) {
+		datasetService.linkToProgramEntityLinks(datasetId);
+		return "redirect:viewDataset?id=" + datasetId;
+	}
+
+	@PostMapping(value = "/linkToOrgEntityLinks")
+	public String linkToOrgEntityLinksPost(@ModelAttribute("id") Long datasetId) {
+		datasetService.linkToOrgEntityLinks(datasetId);
+		return "redirect:viewDataset?id=" + datasetId;
+	}
+
 	@PostMapping(value = "/linkMatchingOrgEntities")
 	public String linkMatchingOrgEntitiesPost(@ModelAttribute("id") Long id) {
 		datasetService.linkMatchingOrgEntities(id);
 		return "redirect:viewDataset?id=" + id;
 	}
 
+	@PostMapping(value = "/linkMatchingProgEntities")
+	public String linkMatchingProgramEntitiesPost(@ModelAttribute("id") Long id) {
+		datasetService.linkMatchingProgramEntities(id);
+		return "redirect:viewDataset?id=" + id;
+	}
+
+	@PostMapping(value = "/expressCreateAndSetLinkPrograms")
+	public String expressCreateAndSetLinkPrograms(@ModelAttribute("id") Long id) {
+		for (DatasetProgram prog : datasetService.getUnlinkedDatasetPrograms(id)) {
+			Program newProg = datasetService.createProgramFromDatasetProg(prog);
+			dataService.saveProgram(newProg);
+			datasetService.linkDatasetProgram(prog, newProg);
+
+		}
+		return "redirect:viewDataset?id=" + id;
+	}
+
 	@PostMapping(value = "/expressCreateAndSetLink")
-	public String expressCreateAndSetLink(@ModelAttribute("id") Long id) {
-		for (DatasetOrganization org : datasetService.getDatasetWarningOrgs(id)) {
+	public String expressCreateAndSetLinkOrgs(@ModelAttribute("id") Long id) {
+		for (DatasetOrganization org : datasetService.getUnlinkedDatasetOrgs(id)) {
 			Organization newOrg = datasetService.createOrgFromDatasetOrg(org);
 			dataService.saveOrganization(newOrg);
 			datasetService.linkDatasetOrg(org, newOrg);

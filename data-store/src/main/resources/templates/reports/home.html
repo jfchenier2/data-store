@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/general.html :: common_header(~{::title},~{},~{})}">
+<title>Data store - Reports</title>
+</head>
+<body>
+	<div th:insert="~{fragments/general.html :: header_nav('reports')}" />
+	<div class="container">
+		<h1 th:utext="#{reports.title}"></h1>
+        <p th:utext="#{reports.description}"></p>
+        <ol>
+	        <li><a href="applicationsPerOrganization">Applications Per Organization Report</a></li>
+	        <li>Applications Per Program</li>
+        </ol>
+	</div>
+   </body>
+</html>

@@ -26,6 +26,26 @@
 			<div class="col-sm-2 col-form-label" th:utext="#{form.agencies}">Registered Entity Links</div>
 		</div>
 		<div class="form-group row">
+			<div class="col-sm-2 col-form-label" >Program Links</div>
+			<div class="col-sm-10">
+				<table id="configLinks">
+				<thead>
+					<tr>
+						<td>Program Name</td>
+						<td>Registered External ID</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="link : ${programLinks}">
+						<td><a th:href="@{'/entities/programs/viewProgram'(id=${link.program.id})}" th:text="${link.program.getLocalizedAttribute('name')}"></a></td>
+						<td th:text="${link.extId}"></td>
+					</tr>
+				</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label" >Organization Links</div>
 			<div class="col-sm-10">
 				<table id="configLinks">
 				<thead>
@@ -35,7 +55,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:each="link : ${entityLinks}">
+					<tr th:each="link : ${orgLinks}">
 						<td><a th:href="@{'/entities/orgs/viewOrg'(id=${link.org.id})}" th:text="${link.org.getLocalizedAttribute('name')}"></a></td>
 						<td th:text="${link.extId}"></td>
 					</tr>

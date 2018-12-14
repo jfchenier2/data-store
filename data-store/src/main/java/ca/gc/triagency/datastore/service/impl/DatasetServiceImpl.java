@@ -468,4 +468,14 @@ public class DatasetServiceImpl implements DatasetService {
 		return retval;
 	}
 
+	@Override
+	public List<EntityLinkProgram> getDatasetConfigProgramLinks(long id) {
+		return entityLinkProgramRepo.findByDatasetConfigurationId(id);
+	}
+
+	@Override
+	public List<EntityLinkOrganization> getDatasetConfigOrgLinks(long id) {
+		return entityLinkOrgRepo.findByDatasetConfigurationId(id);
+	}
+
 }

@@ -80,6 +80,8 @@ public class DatasetController {
 	@GetMapping(value = "/viewDatasetConfig")
 	public String viewDataestConfig(@RequestParam("id") long id, Model model) {
 		model.addAttribute("config", datasetService.getDatasetConfiguration(id));
+		model.addAttribute("programLinks", datasetService.getDatasetConfigProgramLinks(id));
+		model.addAttribute("orgLinks", datasetService.getDatasetConfigOrgLinks(id));
 		return "datasets/viewDatasetConfiguration";
 	}
 

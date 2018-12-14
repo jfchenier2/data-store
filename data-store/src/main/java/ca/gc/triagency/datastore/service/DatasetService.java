@@ -7,6 +7,8 @@ import ca.gc.triagency.datastore.model.Dataset;
 import ca.gc.triagency.datastore.model.DatasetConfiguration;
 import ca.gc.triagency.datastore.model.DatasetOrganization;
 import ca.gc.triagency.datastore.model.DatasetProgram;
+import ca.gc.triagency.datastore.model.EntityLinkOrganization;
+import ca.gc.triagency.datastore.model.EntityLinkProgram;
 import ca.gc.triagency.datastore.model.Organization;
 import ca.gc.triagency.datastore.model.Program;
 
@@ -55,5 +57,9 @@ public interface DatasetService {
 	public long linkToProgramEntityLinks(Long datasetId);
 
 	public long linkToOrgEntityLinks(Long datasetId);
+
+	public List<EntityLinkProgram> getDatasetConfigProgramLinks(long id);
+
+	public List<EntityLinkOrganization> getDatasetConfigOrgLinks(long id);
 
 }

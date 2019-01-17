@@ -363,6 +363,13 @@ public class DatasetServiceImpl implements DatasetService {
 		boolean retval = false;
 		Dataset ds = datasetRepo.getOne(id);
 		if (ds != null) {
+			List<Dataset> approvedDatasets = datasetRepo.findByDatasetStatus(DatasetStatus.APPROVED);
+			for(Dataset set : approvedDatasets) {
+				if(set.getDatasetConfiguration().getId() == ds.getDatasetConfiguration().getId()) {
+					set.setDatasetStatus(DatasetStatus.TO_DELETE);
+					datasetRepo.save(set);
+				}
+			}
 			ds.setDatasetStatus(DatasetStatus.APPROVED);
 			datasetRepo.save(ds);
 			retval = true;

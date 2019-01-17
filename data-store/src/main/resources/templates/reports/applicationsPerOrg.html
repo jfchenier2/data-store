@@ -38,7 +38,7 @@
 			    </table>
 			    <p>This report was generated with the following datasets:</p>
 			    <ul th:each="dataset : ${approvedDatasets}">
-			    	<li><span th:text="${dataset.datasetConfiguration.getLocalizedAttribute('name')}"> :: updated on <span th:text="${dataset.updateDateTime}"></span></li>
+			    	<li><span th:text="${dataset.datasetConfiguration.getLocalizedAttribute('name')}"></span> :: ID: <span th:text="${dataset.id}"></span> :: updated on <span th:text="${dataset.updateDateTime}"></span></li>
 			    </ul>
 			</div>
 			<div class="col-sm-2"></div>

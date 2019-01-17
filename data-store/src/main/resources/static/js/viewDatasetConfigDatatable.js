@@ -1,3 +1,4 @@
 $(document).ready( function () {
-	 var table = $('#configLinks').DataTable({});
+	 var table = $('#orgConfigLinks').DataTable({});
+	 var table = $('#progConfigLinks').DataTable({});
 });

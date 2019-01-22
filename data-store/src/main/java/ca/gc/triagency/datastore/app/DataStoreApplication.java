@@ -18,8 +18,26 @@ public class DataStoreApplication {
 	@Autowired
 	ImportService importService;
 
+	// private final ApplicationContext applicationContext;
+
+	// @Autowired
+	// public DataStoreApplication(ApplicationContext applicationContext) {
+	// this.applicationContext = applicationContext;
+	// }
+
 	public static void main(String[] args) {
 		SpringApplication.run(DataStoreApplication.class, args);
 	}
+
+	// private void setReferralForContext() {
+	// LdapTemplate ldapTemplate =
+	// applicationContext.getBean(LdapTemplate.class);
+	// // above is necessary for LdapContextSource to be created
+	//
+	// LdapContextSource ldapContextSource =
+	// applicationContext.getBean(LdapContextSource.class);
+	// ldapContextSource.setReferral("follow");
+	// ldapContextSource.afterPropertiesSet();
+	// }
 
 }

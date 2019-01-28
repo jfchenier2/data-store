@@ -1,11 +1,20 @@
 package ca.gc.triagency.datastore.app.config;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.ldap.core.ContextSource;
+import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @Configuration
 @EnableWebSecurity
@@ -33,32 +42,62 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.and().logout().permitAll().and().exceptionHandling().accessDeniedPage("/exception/forbiden-by-role");
 	}
 
-	@Override
-	public void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.ldapAuthentication().userDnPatterns("CN={0},CN=Users").contextSource().url(ldapUrls + ldapBaseDn)
-				.managerDn(ldapSecurityPrincipal).managerPassword(ldapPrincipalPassword);
-		// .and().passwordCompare()
-		// .passwordEncoder(new
-		// LdapShaPasswordEncoder()).passwordAttribute("userPassword");
-	}
-	//
-	// @Bean
 	// @Override
-	// public UserDetailsService userDetailsService() {
-	// Collection<UserDetails> users = new ArrayList<UserDetails>();
-	// users.add(User.withDefaultPasswordEncoder().username("sshrc-user").password("password")
-	// .roles("AGENCY_USER", "SSHRC").build());
-	// users.add(User.withDefaultPasswordEncoder().username("nserc-user").password("password")
-	// .roles("AGENCY_USER", "NSERC").build());
-	// users.add(User.withDefaultPasswordEncoder().username("sshrc-user-edi").password("password")
-	// .roles("AGENCY_USER", "SSHRC", "EDI_AUTHORIZED").build());
-	// users.add(User.withDefaultPasswordEncoder().username("nserc-user-edi").password("password")
-	// .roles("AGENCY_USER", "NSERC", "EDI_AUTHORIZED").build());
-	// users.add(User.withDefaultPasswordEncoder().username("admin").password("password").roles("ADMIN",
-	// "AGENCY_USER")
-	// .build());
+	// public void configure(AuthenticationManagerBuilder auth) throws Exception
+	// {
+	// LdapContextSource lcs = new LdapContextSource();
+	// lcs.setUserDn(ldapSecurityPrincipal);
+	// lcs.setPassword(ldapPrincipalPassword);
+	// lcs.setUrl(ldapUrls);
+	// lcs.setReferral("follow");
+	// lcs.setBase(ldapBaseDn);
+	// lcs.afterPropertiesSet();
+	// auth.ldapAuthentication().userDnPatterns("CN={0},CN=Users").contextSource(lcs);
 	//
-	// return new InMemoryUserDetailsManager(users);
+	// // .url(ldapUrls + ldapBaseDn)
+	// //
+	// .managerDn(ldapSecurityPrincipal).managerPassword(ldapPrincipalPassword);
+	// //
+	// .managerDn(ldapSecurityPrincipal).managerPassword(ldapPrincipalPassword);
+	// // .and().passwordCompare()
+	// // .passwordEncoder(new
+	// // LdapShaPasswordEncoder()).passwordAttribute("userPassword");
 	// }
+
+	// @Bean
+	// ContextSource contextSource(AuthenticationSource authenticationSource) {
+	// LdapContextSource retval = new LdapContextSource();
+	// retval.setAuthenticationSource(authenticationSource);
+	// retval.setUrl("ldap://52.60.217.219:389/");
+	// retval.setBase("dc=nserc_poc,dc=net");
+	// retval.setUserDn("CN={0},CN=Users");
+	// retval.
+	// return retval;
 	// }
+
+	@Bean
+	LdapTemplate getLdapTemplate(ContextSource contextSource) {
+		LdapTemplate retval = new LdapTemplate(contextSource);
+		retval.setIgnorePartialResultException(true);
+		return retval;
+	}
+
+	//
+	@Bean
+	@Override
+	public UserDetailsService userDetailsService() {
+		Collection<UserDetails> users = new ArrayList<UserDetails>();
+		users.add(User.withDefaultPasswordEncoder().username("sshrc-user").password("password")
+				.roles("AGENCY_USER", "SSHRC").build());
+		users.add(User.withDefaultPasswordEncoder().username("nserc-user").password("password")
+				.roles("AGENCY_USER", "NSERC").build());
+		users.add(User.withDefaultPasswordEncoder().username("sshrc-user-edi").password("password")
+				.roles("AGENCY_USER", "SSHRC", "EDI_AUTHORIZED").build());
+		users.add(User.withDefaultPasswordEncoder().username("nserc-user-edi").password("password")
+				.roles("AGENCY_USER", "NSERC", "EDI_AUTHORIZED").build());
+		users.add(User.withDefaultPasswordEncoder().username("admin").password("password").roles("ADMIN", "AGENCY_USER")
+				.build());
+
+		return new InMemoryUserDetailsManager(users);
+	}
 }

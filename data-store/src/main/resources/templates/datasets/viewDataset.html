@@ -167,6 +167,13 @@
 				<div class="col-sm-2 col-form-label" th:utext="#{form.clickApprove}">Click to approve</div>
 				<div class="col-sm-4"><form th:method="post" th:action="@{approveDataset}"><input type="hidden" name="id" th:value="${dataset.id}" /><input type="submit" class="btn btn-primary" th:value="#{action.approve}"/></form></div>
 			</div>
+			<div>
+				<form action="createAwardDataset">
+					<input name="id" type="hidden" th:value="${dataset.id}" />
+					<input type="submit" class="btn" value="Upload Awards"/>
+				
+				</form>
+			</div>
 		</div>
 		
 	</div>

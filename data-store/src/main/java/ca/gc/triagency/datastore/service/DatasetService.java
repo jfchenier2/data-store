@@ -62,4 +62,6 @@ public interface DatasetService {
 
 	public List<EntityLinkOrganization> getDatasetConfigOrgLinks(long id);
 
+	public void uploadAwardData(Dataset dataset);
+
 }

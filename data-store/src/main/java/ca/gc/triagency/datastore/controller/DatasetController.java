@@ -42,6 +42,32 @@ public class DatasetController {
 		return "datasets/home";
 	}
 
+	@GetMapping(value = "/createAwardDataset")
+	public String createAwardDatasetSelectFile(@RequestParam long id, Model model) {
+		model.addAttribute("parentDataset", datasetService.getDataset(id));
+		model.addAttribute("datasetFiles", datasetService.getDatasetFiles());
+		return "datasets/createAwardDataset";
+	}
+
+	@GetMapping(value = "/createAwardDataset", params = { "filename" })
+	public String createAwardDataset(@RequestParam long id, @RequestParam String filename, Model model) {
+		Dataset datasetForm = datasetService.configureNewDatasetFromFilename(filename);
+		datasetForm.setParentDataset(datasetService.getDataset(id));
+		model.addAttribute("form", datasetForm);
+		return "datasets/createAwardDatasetValidate";
+	}
+
+	@Async
+	@PostMapping(value = "/createAwardDataset")
+	public String createAwardDatasetPost(@RequestParam long id, @RequestParam String filename) {
+		Dataset form = datasetService.configureNewDatasetFromFilename(filename);
+		form.setDatasetStatus(Dataset.DatasetStatus.CREATED);
+		form.setParentDataset(datasetService.getDataset(id));
+		Dataset dataset = datasetService.saveDataset(form);
+		datasetService.uploadAwardData(dataset);
+		return "redirect:home";
+	}
+
 	@GetMapping(value = "/createDataset")
 	public String createDatasetSelectFile(Model model) {
 		model.addAttribute("datasetFiles", datasetService.getDatasetFiles());

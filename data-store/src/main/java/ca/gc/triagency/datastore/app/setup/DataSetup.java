@@ -101,8 +101,24 @@ public class DataSetup {
 			amisApplsConfig.setNameFr("Ensemble de donnees AMIS Complet");
 			configRepo.save(amisApplsConfig);
 
+			GrantSystemCapability amisAwardsCapability = new GrantSystemCapability();
+			amisAwardsCapability.setGrantingSystem(amis);
+			amisAwardsCapability.setGrantingFunction(GrantingFunction.APPLY);
+			amisAwardsCapability.setNameEn("AMIS Applications");
+			amisAwardsCapability.setNameFr("Applications de AMIS");
+			amisAwardsCapability.setAcronymEn("AMIS_APPS");
+			amisAwardsCapability.setAcronymFr("AMIS_APPS");
+			systemCapacityRepo.save(amisAwardsCapability);
+
+			DatasetConfiguration amisAwardsConfig = new DatasetConfiguration();
+			amisAwardsConfig.setAcronym("AMISAWARDS");
+			amisAwardsConfig.setGrantSystemCapability(amisApplsCapability);
+			amisAwardsConfig.setNameEn("AMIS Awards dataset");
+			amisAwardsConfig.setNameFr("Ensemble de donnees AMIS ");
+			configRepo.save(amisAwardsConfig);
+
 			GrantSystemCapability namisApplsCapability = new GrantSystemCapability();
-			namisApplsCapability.setGrantingSystem(amis);
+			namisApplsCapability.setGrantingSystem(namis);
 			namisApplsCapability.setGrantingFunction(GrantingFunction.APPLY);
 			namisApplsCapability.setNameEn("NAMIS Applications");
 			namisApplsCapability.setNameFr("Applications de NAMIS");
@@ -116,6 +132,22 @@ public class DataSetup {
 			namisApplsConfig.setNameEn("NAMIS Master dataset");
 			namisApplsConfig.setNameFr("Ensemble de donnees NAMIS Complet");
 			configRepo.save(namisApplsConfig);
+
+			GrantSystemCapability namisAwardsCapability = new GrantSystemCapability();
+			namisAwardsCapability.setGrantingSystem(namis);
+			namisAwardsCapability.setGrantingFunction(GrantingFunction.AWARD);
+			namisAwardsCapability.setNameEn("NAMIS Applications");
+			namisAwardsCapability.setNameFr("Applications de NAMIS");
+			namisAwardsCapability.setAcronymEn("NAMIS_APPS");
+			namisAwardsCapability.setAcronymFr("NAMIS_APPS");
+			systemCapacityRepo.save(namisAwardsCapability);
+
+			DatasetConfiguration namisAwardsConfig = new DatasetConfiguration();
+			namisAwardsConfig.setAcronym("NAMISAWARDS");
+			namisAwardsConfig.setGrantSystemCapability(namisApplsCapability);
+			namisAwardsConfig.setNameEn("NAMIS Awards dataset");
+			namisAwardsConfig.setNameFr("Ensemble de awards NAMIS");
+			configRepo.save(namisAwardsConfig);
 
 		}
 

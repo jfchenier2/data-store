@@ -32,6 +32,10 @@ public class Dataset {
 	private String filename;
 
 	@ManyToOne
+	@JoinColumn(name = "parent_dataset_id")
+	private Dataset parentDataset;
+
+	@ManyToOne
 	@JoinColumn(name = "dataset_configuration_id")
 	private DatasetConfiguration datasetConfiguration;
 
@@ -53,6 +57,15 @@ public class Dataset {
 	public enum DatasetStatus {
 		/** Some other format. */
 		CREATED, UPLOADING, UPLOAD_COMPLETE, ASSESS, APPROVED, TO_DELETE, ERROR
+	}
+
+	@Column(name = "dataset_type")
+	@Enumerated(EnumType.STRING)
+	private DatasetType datasetType;
+
+	public enum DatasetType {
+		/** Some other format. */
+		APPLICATIONS, AWARDS, PAYMENTS
 	}
 
 	public String getFilename() {
@@ -105,6 +118,22 @@ public class Dataset {
 
 	public void setDatasetConfiguration(DatasetConfiguration datasetConfiguration) {
 		this.datasetConfiguration = datasetConfiguration;
+	}
+
+	public Dataset getParentDataset() {
+		return parentDataset;
+	}
+
+	public void setParentDataset(Dataset parentDataset) {
+		this.parentDataset = parentDataset;
+	}
+
+	public DatasetType getDatasetType() {
+		return datasetType;
+	}
+
+	public void setDatasetType(DatasetType datasetType) {
+		this.datasetType = datasetType;
 	}
 
 }

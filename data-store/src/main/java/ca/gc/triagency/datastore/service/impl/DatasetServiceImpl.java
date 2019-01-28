@@ -29,6 +29,7 @@ import ca.gc.triagency.datastore.model.Dataset.DatasetStatus;
 import ca.gc.triagency.datastore.model.DatasetAppRegistrationRole;
 import ca.gc.triagency.datastore.model.DatasetApplication;
 import ca.gc.triagency.datastore.model.DatasetApplicationRegistration;
+import ca.gc.triagency.datastore.model.DatasetAward;
 import ca.gc.triagency.datastore.model.DatasetConfiguration;
 import ca.gc.triagency.datastore.model.DatasetOrganization;
 import ca.gc.triagency.datastore.model.DatasetPerson;
@@ -37,11 +38,13 @@ import ca.gc.triagency.datastore.model.EntityLinkOrganization;
 import ca.gc.triagency.datastore.model.EntityLinkProgram;
 import ca.gc.triagency.datastore.model.Organization;
 import ca.gc.triagency.datastore.model.Program;
+import ca.gc.triagency.datastore.model.file.ApplyDatasetRow;
 import ca.gc.triagency.datastore.model.file.AwardDatasetRow;
 import ca.gc.triagency.datastore.repo.AgencyRepository;
 import ca.gc.triagency.datastore.repo.DatasetAppRegistrationRepository;
 import ca.gc.triagency.datastore.repo.DatasetAppRegistrationRoleRepository;
 import ca.gc.triagency.datastore.repo.DatasetApplicationRepository;
+import ca.gc.triagency.datastore.repo.DatasetAwardRepository;
 import ca.gc.triagency.datastore.repo.DatasetConfigurationRepository;
 import ca.gc.triagency.datastore.repo.DatasetOrganizationRepository;
 import ca.gc.triagency.datastore.repo.DatasetPersonRepository;
@@ -81,6 +84,9 @@ public class DatasetServiceImpl implements DatasetService {
 
 	@Autowired
 	DatasetProgramRepository datasetProgramRepo;
+
+	@Autowired
+	DatasetAwardRepository datasetAwardRepo;
 
 	@Autowired
 	DatasetOrganizationRepository datasetOrgRepo;
@@ -135,6 +141,46 @@ public class DatasetServiceImpl implements DatasetService {
 	}
 
 	@Override
+	public void uploadAwardData(Dataset dataset) {
+		HashMap<Long, DatasetApplication> datasetAppsHash = new HashMap<Long, DatasetApplication>();
+		List<DatasetApplication> relevantApps = datasetApplicationRepo
+				.findByDatasetId(dataset.getParentDataset().getId());
+		for (DatasetApplication app : relevantApps) {
+			datasetAppsHash.put(app.getExtId(), app);
+		}
+
+		HashMap<Long, DatasetPerson> datasetPersonHash = new HashMap<Long, DatasetPerson>();
+		List<DatasetPerson> relevantPersons = datasetPersonRepo.findAll(); // fixme
+		for (DatasetPerson p : relevantPersons) {
+			datasetPersonHash.put(p.getExtId(), p);
+		}
+
+		long rownum = 0;
+		for (AwardDatasetRow row : loadAwardObjectList(dataset.getFilename())) {
+			rownum++;
+			DatasetAward award = new DatasetAward();
+			row.fixApplicationId();
+			row.fixPersonId();
+			award.setAmount(Float.parseFloat(row.getAwardedAmmount()));
+			award.setDatasetApplication(datasetAppsHash.get(Long.parseLong(row.getApplicationId())));
+			award.setDatasetPerson(datasetPersonHash.get(Long.parseLong(row.getPersonIdentifier())));
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy");
+			Date parsedDate = null;
+			try {
+				parsedDate = formatter.parse(row.getCompetitionYear());
+			} catch (ParseException e) {
+				System.out.println("unvalid competition year:" + row.getCompetitionYear());
+			}
+			award.setProgramYear(parsedDate);
+			datasetAwardRepo.save(award);
+
+		}
+		dataset.setTotalRecords(rownum);
+		datasetRepo.save(dataset);
+
+	}
+
+	@Override
 	public void uploadData(Dataset dataset) {
 		List<Agency> agencies = agencyRepo.findAll();
 		Agency SSHRC = null, NSERC = null;
@@ -159,7 +205,7 @@ public class DatasetServiceImpl implements DatasetService {
 		DatasetAppRegistrationRole currentAppRole = null;
 		DatasetPerson currentPerson = null;
 		DatasetOrganization currentOrg = null;
-		for (AwardDatasetRow row : loadObjectList(dataset.getFilename())) {
+		for (ApplyDatasetRow row : loadObjectList(dataset.getFilename())) {
 			if (currentAppId.compareTo(row.getApplicationIdentifier()) != 0) {
 				if (currentApplication != null) {
 					currentApplication = datasetApplicationRepo.save(currentApplication);
@@ -276,7 +322,24 @@ public class DatasetServiceImpl implements DatasetService {
 		}
 	}
 
-	public Collection<AwardDatasetRow> loadObjectList(String fileName) {
+	public Collection<ApplyDatasetRow> loadObjectList(String fileName) {
+		Collection<ApplyDatasetRow> rows = null;
+		// rows = loadObjectList(AwardDatasetRow.class, "datasets/" + fileName);
+
+		Xcelite xcelite;
+		ClassLoader classLoader = getClass().getClassLoader();
+		File file = new File(classLoader.getResource("datasets/" + fileName).getFile());
+		xcelite = new Xcelite(file);
+		XceliteSheet sheet = xcelite.getSheet(0);
+		SheetReader<ApplyDatasetRow> reader = sheet.getBeanReader(ApplyDatasetRow.class);
+		rows = reader.read();
+
+		// return rows;
+		return rows;
+
+	}
+
+	public Collection<AwardDatasetRow> loadAwardObjectList(String fileName) {
 		Collection<AwardDatasetRow> rows = null;
 		// rows = loadObjectList(AwardDatasetRow.class, "datasets/" + fileName);
 
@@ -364,8 +427,8 @@ public class DatasetServiceImpl implements DatasetService {
 		Dataset ds = datasetRepo.getOne(id);
 		if (ds != null) {
 			List<Dataset> approvedDatasets = datasetRepo.findByDatasetStatus(DatasetStatus.APPROVED);
-			for(Dataset set : approvedDatasets) {
-				if(set.getDatasetConfiguration().getId() == ds.getDatasetConfiguration().getId()) {
+			for (Dataset set : approvedDatasets) {
+				if (set.getDatasetConfiguration().getId() == ds.getDatasetConfiguration().getId()) {
 					set.setDatasetStatus(DatasetStatus.TO_DELETE);
 					datasetRepo.save(set);
 				}

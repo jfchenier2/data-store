@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ca.gc.triagency.datastore.form.ProgramForm;
 import ca.gc.triagency.datastore.model.Agency;
 import ca.gc.triagency.datastore.model.Dataset;
+import ca.gc.triagency.datastore.model.Dataset.DatasetType;
 import ca.gc.triagency.datastore.model.DatasetOrganization;
 import ca.gc.triagency.datastore.model.DatasetProgram;
 import ca.gc.triagency.datastore.model.Organization;
@@ -63,6 +64,7 @@ public class DatasetController {
 		Dataset form = datasetService.configureNewDatasetFromFilename(filename);
 		form.setDatasetStatus(Dataset.DatasetStatus.CREATED);
 		form.setParentDataset(datasetService.getDataset(id));
+		form.setDatasetType(DatasetType.AWARDS);
 		Dataset dataset = datasetService.saveDataset(form);
 		datasetService.uploadAwardData(dataset);
 		return "redirect:home";
@@ -86,6 +88,7 @@ public class DatasetController {
 	public String createDatasetPost(@RequestParam String filename) {
 		Dataset form = datasetService.configureNewDatasetFromFilename(filename);
 		form.setDatasetStatus(Dataset.DatasetStatus.CREATED);
+		form.setDatasetType(DatasetType.APPLICATIONS);
 		Dataset dataset = datasetService.saveDataset(form);
 		datasetService.uploadData(dataset);
 		return "redirect:home";
@@ -97,6 +100,10 @@ public class DatasetController {
 		Dataset ds = datasetService.getDataset(id);
 		ds = datasetService.markAssessIfFirstTimeView(ds);
 		model.addAttribute("dataset", ds);
+		/*if(ds.getDatasetType() == DatasetType.AWARDS) {
+			return "datasets/viewAwardDataset";
+			
+		}*/
 		model.addAttribute("warningOrgs", datasetService.getUnlinkedDatasetOrgs(id));
 		model.addAttribute("warningProgs", datasetService.getUnlinkedDatasetPrograms(id));
 

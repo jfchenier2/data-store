@@ -24,6 +24,12 @@ public class DatasetOrganization implements LocalizedParametersModel {
 	private String nameEn;
 
 	private String nameFr;
+	
+	private String city;
+	
+	private String postalZipCode;
+	
+	private String stateProvCode;
 
 	@ManyToOne
 	@JoinColumn(name = "dataset_id")
@@ -76,5 +82,29 @@ public class DatasetOrganization implements LocalizedParametersModel {
 
 	public void setDataset(Dataset dataset) {
 		this.dataset = dataset;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getPostalZipCode() {
+		return postalZipCode;
+	}
+
+	public void setPostalZipCode(String postalZipCode) {
+		this.postalZipCode = postalZipCode;
+	}
+
+	public String getStateProvCode() {
+		return stateProvCode;
+	}
+
+	public void setStateProvCode(String stateProvCode) {
+		this.stateProvCode = stateProvCode;
 	}
 }

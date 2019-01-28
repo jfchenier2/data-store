@@ -143,8 +143,9 @@ public class DatasetServiceImpl implements DatasetService {
 	@Override
 	public void uploadAwardData(Dataset dataset) {
 		HashMap<Long, DatasetApplication> datasetAppsHash = new HashMap<Long, DatasetApplication>();
+		Long parentDatasetId = dataset.getParentDataset().getId();
 		List<DatasetApplication> relevantApps = datasetApplicationRepo
-				.findByDatasetId(dataset.getParentDataset().getId());
+				.findByDatasetId(parentDatasetId);
 		for (DatasetApplication app : relevantApps) {
 			datasetAppsHash.put(app.getExtId(), app);
 		}
@@ -256,6 +257,9 @@ public class DatasetServiceImpl implements DatasetService {
 					// e.printStackTrace();
 				}
 				currentApplication.setCreateDateTime(parsedDate);
+				currentApplication.setExtIdentifier(row.getApplicationIdentifier());
+				row.fixApplId();
+				currentApplication.setExtId(Long.parseLong(row.getApplId()));
 				currentApplication = datasetApplicationRepo.save(currentApplication);
 
 			}
@@ -279,14 +283,18 @@ public class DatasetServiceImpl implements DatasetService {
 				currentOrg.setNameEn(row.getOrgNameEn());
 				currentOrg.setNameFr(row.getOrgNameFr());
 				currentOrg.setDataset(dataset);
+				currentOrg.setPostalZipCode(row.getPostalZipCode());
+				currentOrg.setCity(row.getCity());
+				currentOrg.setStateProvCode(row.getStateProvCode());
 				currentOrg = datasetOrgRepo.save(currentOrg);
 				orgHash.put(currentOrg.getExtId(), currentOrg);
 				System.out.println("created DatasetOrganization: " + currentOrg);
 			}
+			row.fixPersonIdentifier();
 			currentPerson = personHash.get(row.getPersonIdentifier());
 			if (currentPerson == null) {
 				currentPerson = new DatasetPerson();
-				currentPerson.setExtId(Long.getLong(row.getPersonIdentifier()));
+				currentPerson.setExtId(Long.parseLong(row.getPersonIdentifier()));
 				currentPerson.setFamilyName(row.getFamilyName());
 				currentPerson.setGivenName(row.getGivenName());
 				currentPerson = datasetPersonRepo.save(currentPerson);
@@ -426,7 +434,7 @@ public class DatasetServiceImpl implements DatasetService {
 		boolean retval = false;
 		Dataset ds = datasetRepo.getOne(id);
 		if (ds != null) {
-			List<Dataset> approvedDatasets = datasetRepo.findByDatasetStatus(DatasetStatus.APPROVED);
+			List<Dataset> approvedDatasets = datasetRepo.findByDatasetStatusAndDatasetType(DatasetStatus.APPROVED, ds.getDatasetType());
 			for (Dataset set : approvedDatasets) {
 				if (set.getDatasetConfiguration().getId() == ds.getDatasetConfiguration().getId()) {
 					set.setDatasetStatus(DatasetStatus.TO_DELETE);

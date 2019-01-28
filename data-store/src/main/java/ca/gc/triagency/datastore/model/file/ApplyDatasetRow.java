@@ -55,6 +55,15 @@ public class ApplyDatasetRow {
 	@Column(name = "Organization_Name_French")
 	private String orgNameFr;
 
+	@Column(name = "city")
+	private String city;
+
+	@Column(name = "postal_zip_code")
+	private String postalZipCode;
+
+	@Column(name = "state_prov_code")
+	private String stateProvCode;
+
 	public String getSource() {
 		return source;
 	}
@@ -151,6 +160,12 @@ public class ApplyDatasetRow {
 		this.givenName = givenName;
 	}
 
+	public void fixPersonIdentifier() {
+		int dotLocation = personIdentifier.indexOf(".");
+		if (dotLocation > 0) {
+			personIdentifier = personIdentifier.substring(0, dotLocation);
+		}
+	}
 	public String getPersonIdentifier() {
 		return personIdentifier;
 	}
@@ -171,6 +186,12 @@ public class ApplyDatasetRow {
 		int dotLocation = orgId.indexOf(".");
 		if (dotLocation > 0) {
 			orgId = orgId.substring(0, dotLocation);
+		}
+	}
+	public void fixApplId() {
+		int dotLocation = applId.indexOf(".");
+		if (dotLocation > 0) {
+			applId = applId.substring(0, dotLocation);
 		}
 	}
 
@@ -196,5 +217,29 @@ public class ApplyDatasetRow {
 
 	public void setProgramId(String programId) {
 		this.programId = programId;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getPostalZipCode() {
+		return postalZipCode;
+	}
+
+	public void setPostalZipCode(String postalZipCode) {
+		this.postalZipCode = postalZipCode;
+	}
+
+	public String getStateProvCode() {
+		return stateProvCode;
+	}
+
+	public void setStateProvCode(String stateProvCode) {
+		this.stateProvCode = stateProvCode;
 	}
 }

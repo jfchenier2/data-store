@@ -10,7 +10,7 @@ public class AwardDatasetRow {
 	@Column(name = "Application_Identifier")
 	private String applicationIdentifier;
 
-	@Column(name = "Application_ID")
+	@Column(name = "Appl_ID")
 	private String applicationId;
 
 	@Column(name = "Competition_Year")

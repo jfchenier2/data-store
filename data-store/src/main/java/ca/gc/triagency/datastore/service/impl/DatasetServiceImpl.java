@@ -158,10 +158,13 @@ public class DatasetServiceImpl implements DatasetService {
 
 		long rownum = 0;
 		for (AwardDatasetRow row : loadAwardObjectList(dataset.getFilename())) {
-			rownum++;
 			DatasetAward award = new DatasetAward();
 			row.fixApplicationId();
 			row.fixPersonId();
+			if(row.getAwardedAmmount() == null || row.getAwardedAmmount().contains("NULL")) {
+				continue;
+			}
+			rownum++;
 			award.setAmount(Float.parseFloat(row.getAwardedAmmount()));
 			award.setDatasetApplication(datasetAppsHash.get(Long.parseLong(row.getApplicationId())));
 			award.setDatasetPerson(datasetPersonHash.get(Long.parseLong(row.getPersonIdentifier())));

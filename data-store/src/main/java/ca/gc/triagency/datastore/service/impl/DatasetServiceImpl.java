@@ -397,10 +397,11 @@ public class DatasetServiceImpl implements DatasetService {
 	}
 
 	@Override
-	public Program createProgramFromDatasetProg(DatasetProgram prog) {
+	public Program createProgramFromDatasetProg(DatasetProgram prog, Agency agency) {
 		Program newProg = new Program();
 		newProg.setNameEn(prog.getNameEn());
 		newProg.setNameFr(prog.getNameFr());
+		newProg.setLeadAgency(agency);
 		newProg.setLeadAgency(prog.getLeadAgency());
 		return newProg;
 

@@ -25,6 +25,10 @@ public class DatasetConfiguration implements LocalizedParametersModel {
 	// private String
 
 	@ManyToOne
+	@JoinColumn(name = "default_agency_id")
+	private Agency defaultAgencyForIncommingPrograms;
+
+	@ManyToOne
 	@JoinColumn(name = "grant_system_capability_id")
 	private GrantSystemCapability grantSystemCapability;
 
@@ -82,6 +86,14 @@ public class DatasetConfiguration implements LocalizedParametersModel {
 
 	public Long getId() {
 		return id;
+	}
+
+	public Agency getDefaultAgencyForIncommingPrograms() {
+		return defaultAgencyForIncommingPrograms;
+	}
+
+	public void setDefaultAgencyForIncommingPrograms(Agency defaultAgencyForIncommingPrograms) {
+		this.defaultAgencyForIncommingPrograms = defaultAgencyForIncommingPrograms;
 	}
 
 }

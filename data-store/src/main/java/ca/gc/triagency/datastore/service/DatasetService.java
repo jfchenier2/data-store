@@ -3,6 +3,7 @@ package ca.gc.triagency.datastore.service;
 import java.io.File;
 import java.util.List;
 
+import ca.gc.triagency.datastore.model.Agency;
 import ca.gc.triagency.datastore.model.Dataset;
 import ca.gc.triagency.datastore.model.DatasetConfiguration;
 import ca.gc.triagency.datastore.model.DatasetOrganization;
@@ -50,7 +51,7 @@ public interface DatasetService {
 
 	public void linkDatasetProgram(DatasetProgram dsProg, Program prog);
 
-	public Program createProgramFromDatasetProg(DatasetProgram prog);
+	public Program createProgramFromDatasetProg(DatasetProgram prog, Agency defaultAgency);
 
 	public long linkMatchingProgramEntities(Long id);
 

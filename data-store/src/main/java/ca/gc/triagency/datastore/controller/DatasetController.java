@@ -154,7 +154,7 @@ public class DatasetController {
 	@PostMapping(value = "/createProgFromDataset")
 	public String createProgramFromDatasetPost(@ModelAttribute("id") Long id) {
 		DatasetProgram prog = datasetService.getDatasetProgram(id);
-		Program newProg = datasetService.createProgramFromDatasetProg(prog);
+		Program newProg = datasetService.createProgramFromDatasetProg(prog, prog.getDataset().getDatasetConfiguration().getDefaultAgencyForIncommingPrograms());
 		dataService.saveProgram(newProg);
 		datasetService.linkDatasetProgram(prog, newProg);
 		return "redirect:viewDatasetProgram?id=" + id;
@@ -215,12 +215,13 @@ public class DatasetController {
 
 	@PostMapping(value = "/expressCreateAndSetLinkPrograms")
 	public String expressCreateAndSetLinkPrograms(@ModelAttribute("id") Long id) {
+		Dataset dataset = datasetService.getDataset(id);
 		for (DatasetProgram prog : datasetService.getUnlinkedDatasetPrograms(id)) {
-			Program newProg = datasetService.createProgramFromDatasetProg(prog);
+			Program newProg = datasetService.createProgramFromDatasetProg(prog, dataset.getDatasetConfiguration().getDefaultAgencyForIncommingPrograms());
 			dataService.saveProgram(newProg);
 			datasetService.linkDatasetProgram(prog, newProg);
 
-		}
+		} 
 		return "redirect:viewDataset?id=" + id;
 	}
 

@@ -35,9 +35,30 @@ public class ReportsController {
 		model.addAttribute("approvedDatasets", reportService.getApprovedDatasets());
 		return "reports/applicationsPerOrg";
 	}
+	
+	@GetMapping(value = "/dataVizAwardsByOrganization")
+	public String dataVizAwardsByOrganization() {
+		return "reports/dataVizAwardsByOrganization";
+	}
+	
+	@GetMapping(value = "/dataVizAwardsByOrganizationPBI")
+	public String dataVizAwardsByOrganizationPBI() {
+		return "reports/dataVizAwardsByOrganizationPBI";
+	}
+	
 	@GetMapping(value = "/dataVizProgramsByAgency")
 	public String dataVizProgramsByAgency() {
 		return "reports/dataVizProgramsByAgency";
+	}
+	
+	@GetMapping(value = "/dataVizApplicationsByOrg")
+	public String dataVizApplicationsByOrg() {
+		return "reports/dataVizApplicationsByOrg";
+	}
+	
+	@GetMapping(value = "/dataVizAwardsByLocation")
+	public String dataVizAwardsByLocation() {
+		return "reports/dataVizAwardsByLocation";
 	}
 
 }

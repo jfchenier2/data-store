@@ -1,17 +1,22 @@
 package ca.gc.triagency.datastore.app.setup;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import ca.gc.triagency.datastore.model.Agency;
 import ca.gc.triagency.datastore.model.DatasetConfiguration;
 import ca.gc.triagency.datastore.model.GrantSystemCapability;
 import ca.gc.triagency.datastore.model.GrantSystemCapability.GrantingFunction;
 import ca.gc.triagency.datastore.model.GrantingSystem;
+import ca.gc.triagency.datastore.repo.AgencyRepository;
 import ca.gc.triagency.datastore.repo.DatasetConfigurationRepository;
 import ca.gc.triagency.datastore.repo.GrantSystemCapacityRepository;
 import ca.gc.triagency.datastore.repo.GrantingSystemRepository;
+import ca.gc.triagency.datastore.service.ImportService;
 
 @Component
 public class DataSetup {
@@ -23,10 +28,30 @@ public class DataSetup {
 
 	@Autowired
 	DatasetConfigurationRepository configRepo;
+	
+	@Autowired 
+	ImportService importService;
+	
+	@Autowired
+	AgencyRepository agencyRepo;
 
 	@PostConstruct
 	private void setupData() {
 		if (grantingSystemRepo.findAll().isEmpty()) {
+			importService.importAgencies();
+			//importService.importProgramsFromFile();
+			List<Agency> agencies = agencyRepo.findAll();
+			Agency sshrc = null; 
+			Agency nserc = null;
+			for(Agency a : agencies) {
+				if(a.getAcronym().contains("SSHRC")) {
+					sshrc = a;
+				}
+				if(a.getAcronym().contains("NSERC")) {
+					nserc = a;
+				}
+			}
+			
 			GrantingSystem rp1 = new GrantingSystem();
 			rp1.setNameEn("Research Portal");
 			rp1.setNameEn("Portail de Recherche");
@@ -96,6 +121,7 @@ public class DataSetup {
 
 			DatasetConfiguration amisApplsConfig = new DatasetConfiguration();
 			amisApplsConfig.setAcronym("AMISMASTER");
+			amisApplsConfig.setDefaultAgencyForIncommingPrograms(sshrc);
 			amisApplsConfig.setGrantSystemCapability(amisApplsCapability);
 			amisApplsConfig.setNameEn("AMIS Master dataset");
 			amisApplsConfig.setNameFr("Ensemble de donnees AMIS Complet");
@@ -128,6 +154,7 @@ public class DataSetup {
 
 			DatasetConfiguration namisApplsConfig = new DatasetConfiguration();
 			namisApplsConfig.setAcronym("NAMISMASTER");
+			namisApplsConfig.setDefaultAgencyForIncommingPrograms(nserc);
 			namisApplsConfig.setGrantSystemCapability(namisApplsCapability);
 			namisApplsConfig.setNameEn("NAMIS Master dataset");
 			namisApplsConfig.setNameFr("Ensemble de donnees NAMIS Complet");

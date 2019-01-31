@@ -36,6 +36,16 @@ public class ReportsController {
 		return "reports/applicationsPerOrg";
 	}
 	
+	@GetMapping(value = "/dataVizAwardsByOrganization")
+	public String dataVizAwardsByOrganization() {
+		return "reports/dataVizAwardsByOrganization";
+	}
+	
+	@GetMapping(value = "/dataVizAwardsByOrganizationPBI")
+	public String dataVizAwardsByOrganizationPBI() {
+		return "reports/dataVizAwardsByOrganizationPBI";
+	}
+	
 	@GetMapping(value = "/dataVizProgramsByAgency")
 	public String dataVizProgramsByAgency() {
 		return "reports/dataVizProgramsByAgency";

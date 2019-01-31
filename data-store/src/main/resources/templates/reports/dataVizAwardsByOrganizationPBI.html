@@ -1,0 +1,13 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/general.html :: common_header(~{::title},~{},~{})}">
+<title>Data store - Reports</title>
+</head>
+<body>
+	<div th:insert="~{fragments/general.html :: header_nav('reports')}" />
+	<div class="container">
+		<h1 th:utext="#{reports.dataVizAwardsByOrganizationPBI.title}"></h1>
+        <p th:utext="#{reports.dataVizAwardsByOrganizationPBI.description}"></p>
+        <iframe width="1140" height="541.25" src="https://app.powerbi.com/reportEmbed?reportId=6a0746ca-4b90-4090-b79c-9f984dc03f78&groupId=178118b7-461c-4c6e-931f-0a05a26a2ea8&autoAuth=true" frameborder="0" allowFullScreen="true"></iframe>	</div>
+   </body>
+</html>

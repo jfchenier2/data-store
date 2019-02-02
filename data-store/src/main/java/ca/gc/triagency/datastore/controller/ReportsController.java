@@ -56,9 +56,28 @@ public class ReportsController {
 		return "reports/dataVizApplicationsByOrg";
 	}
 	
+	@GetMapping(value = "/dataVizApplicationsByLocation")
+	public String dataVizApplicationsByLocation() {
+		return "reports/dataVizApplicationsByLocation";
+	}
+	
+	@GetMapping(value = "/dataVizApplicationsByProgram")
+	public String dataVizApplicationsByProgram() {
+		return "reports/dataVizApplicationsByProgram";
+	}
+	
 	@GetMapping(value = "/dataVizAwardsByLocation")
 	public String dataVizAwardsByLocation() {
 		return "reports/dataVizAwardsByLocation";
 	}
-
+	
+	@GetMapping(value = "/dataVizAwardsByProgram")
+	public String dataVizAwardsByProgram() {
+		return "reports/dataVizAwardsByProgram";
+	}
+	
+	@GetMapping(value = "/dataVizParticipantsByProgram")
+	public String dataVizParticipantsByProgram() {
+		return "reports/dataVizParticipantsByProgram";
+	}
 }

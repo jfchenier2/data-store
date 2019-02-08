@@ -7,7 +7,7 @@ import javax.persistence.Table;
 import ca.gc.triagency.datastore.model.util.LocalizedParametersModel;
 
 @Entity
-@Table(name = "report_approved_application_participations", schema = "data_cabin")
+@Table(name = "report_approved_application_participations", schema = "data_store")
 public class ApprovedApplicationParticipation implements LocalizedParametersModel {
 	@Id
 	private Long id;

@@ -13,20 +13,20 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-	@Value("${ldap.urls}")
-	private String ldapUrls;
-
-	@Value("${ldap.base.dn}")
-	private String ldapBaseDn;
-
-	@Value("${ldap.username}")
-	private String ldapSecurityPrincipal;
-
-	@Value("${ldap.password}")
-	private String ldapPrincipalPassword;
-
-	@Value("${ldap.user.dn.pattern}")
-	private String ldapUserDnPattern;
+//	@Value("${ldap.urls}")
+//	private String ldapUrls;
+//
+//	@Value("${ldap.base.dn}")
+//	private String ldapBaseDn;
+//
+//	@Value("${ldap.username}")
+//	private String ldapSecurityPrincipal;
+//
+//	@Value("${ldap.password}")
+//	private String ldapPrincipalPassword;
+//
+//	@Value("${ldap.user.dn.pattern}")
+//	private String ldapUserDnPattern;
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {

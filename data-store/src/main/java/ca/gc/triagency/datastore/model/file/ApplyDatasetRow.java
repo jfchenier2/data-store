@@ -55,13 +55,13 @@ public class ApplyDatasetRow {
 	@Column(name = "Organization_Name_French")
 	private String orgNameFr;
 
-	@Column(name = "city")
+	@Column(name = "Municipality")
 	private String city;
 
-	@Column(name = "postal_zip_code")
+	@Column(name = "Postal_Zip_Code")
 	private String postalZipCode;
 
-	@Column(name = "state_prov_code")
+	@Column(name = "Province_State_Code ")
 	private String stateProvCode;
 
 	public String getSource() {

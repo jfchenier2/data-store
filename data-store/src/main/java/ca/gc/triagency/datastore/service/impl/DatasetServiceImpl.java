@@ -172,10 +172,12 @@ public class DatasetServiceImpl implements DatasetService {
 			Date parsedDate = null;
 			try {
 				parsedDate = formatter.parse(row.getCompetitionYear());
+				award.setProgramYear(parsedDate);
+				parsedDate = formatter.parse(row.getFundingYear());
+				award.setFundingYear(parsedDate);
 			} catch (ParseException e) {
 				System.out.println("unvalid competition year:" + row.getCompetitionYear());
 			}
-			award.setProgramYear(parsedDate);
 			datasetAwardRepo.save(award);
 
 		}

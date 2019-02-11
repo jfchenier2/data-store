@@ -58,6 +58,10 @@ public class AwardDatasetRow {
 	@Column(name = "Awarded_Amount")
 	private String awardedAmmount;
 
+	@Column(name = "Funding_Year")
+	private String fundingYear;
+	
+	
 	// @Column(name = "Grant_Awarded_Amount")
 	// private String grantAwardedAmmount;
 	//
@@ -227,6 +231,14 @@ public class AwardDatasetRow {
 
 	public void setApplicationId(String applicationId) {
 		this.applicationId = applicationId;
+	}
+
+	public String getFundingYear() {
+		return fundingYear;
+	}
+
+	public void setFundingYear(String fundingYear) {
+		this.fundingYear = fundingYear;
 	}
 
 	// public String getGrantAwardedAmmount() {

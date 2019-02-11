@@ -28,18 +28,21 @@ create or replace view data_store.report_approved_awards as
 		where ds.dataset_status like 'APPROVED';
 		
 		
-		
-		
-create or replace view data_cabin.report_application_registrations_per_dataset_organization as 
-	select ds_org.*, count(app.id) as app_num 
-    from data_cabin.dataset_application_registration as reg 
-		join data_cabin.dataset_organization ds_org 
-			on reg.dataset_organization_id=ds_org.id
-        join data_cabin.dataset_application as app
-			on app.id = reg.dataset_application_id
-		join data_cabin.dataset as ds
-			on app.dataset_id = ds.id and ds.dataset_status like 'APPROVED'
-		group by ds_org.id;
+create or replace view data_store.report_application_registrations_per_organization as 
+select org.id as id, org.name_en, org.name_fr, count(*) as app_reg_num, count(Distinct app.id) as app_num, count(Distinct app.dataset_program_id) as program_num
+from data_store.dataset_application_registration as reg 
+			join data_store.dataset_organization ds_org 
+				on reg.dataset_organization_id=ds_org.id            
+			join data_store.entity_link_organization as link_org
+				on ds_org.entity_link_id = link_org.id
+			join data_store.organization as org                  
+				on link_org.org_id = org.id
+    		join data_store.dataset_application as app
+				on app.id = reg.dataset_application_id           
+			join data_store.dataset as ds
+				on app.dataset_id = ds.id and ds.dataset_status like 'APPROVED'
+			group by id;
+			
 
 create or replace view data_cabin.orgs_with_external_link_num as 
 	select org.*, count(org.id) as link_num 

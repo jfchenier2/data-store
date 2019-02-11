@@ -33,26 +33,37 @@ public class DataAccessServiceImpl implements DataAccessService {
 	@Autowired
 	ViewOrgsWithLinkNumRepository viewOrgsWithLinkNumRepo;
 
-	@Override
-	public List<Program> getAllPrograms() {
-		boolean isAdmin = false, isSSHRC = false, isNSERC = false;
-		String agencyAcronym = null;
+	public boolean isAdmin() {
 		for (GrantedAuthority role : SecurityContextHolder.getContext().getAuthentication().getAuthorities()) {
 			if (role.getAuthority().compareTo("ROLE_ADMIN") == 0) {
-				isAdmin = true;
-			} else if (role.getAuthority().compareTo("ROLE_SSHRC") == 0) {
-				isSSHRC = true;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public String getUserAgencyAcronym() {
+		String agencyAcronym = null;
+		for (GrantedAuthority role : SecurityContextHolder.getContext().getAuthentication().getAuthorities()) {
+			if (role.getAuthority().compareTo("ROLE_SSHRC") == 0) {
 				agencyAcronym = "SSHRC";
 
 			} else if (role.getAuthority().compareTo("ROLE_NSERC") == 0) {
-				isNSERC = true;
 				agencyAcronym = "NSERC";
 			}
 		}
+		return agencyAcronym;
+
+	}
+
+	@Override
+	public List<Program> getAllPrograms() {
+		String agencyAcronym = null;
 		List<Program> retval = null;
-		if (isAdmin) {
+		if (isAdmin()) {
 			retval = programRepo.findAll();
 		} else {
+			agencyAcronym = getUserAgencyAcronym();
 			retval = programRepo.findByLeadAgencyAcronymEn(agencyAcronym);
 		}
 		return retval;

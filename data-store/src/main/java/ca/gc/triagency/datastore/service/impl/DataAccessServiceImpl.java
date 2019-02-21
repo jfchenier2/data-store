@@ -10,12 +10,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import ca.gc.triagency.datastore.model.Agency;
+import ca.gc.triagency.datastore.model.ApprovedApplication;
+import ca.gc.triagency.datastore.model.DatasetApplicationRegistration;
 import ca.gc.triagency.datastore.model.Organization;
 import ca.gc.triagency.datastore.model.Program;
 import ca.gc.triagency.datastore.model.view.OrganizationWithLinkNum;
 import ca.gc.triagency.datastore.repo.AgencyRepository;
+import ca.gc.triagency.datastore.repo.DatasetAppRegistrationRepository;
 import ca.gc.triagency.datastore.repo.OrganizationRepository;
 import ca.gc.triagency.datastore.repo.ProgramRepository;
+import ca.gc.triagency.datastore.repo.ViewApprovedAppRegistrations;
+import ca.gc.triagency.datastore.repo.ViewApprovedApplications;
 import ca.gc.triagency.datastore.repo.view.ViewOrgsWithLinkNumRepository;
 import ca.gc.triagency.datastore.service.DataAccessService;
 
@@ -32,6 +37,14 @@ public class DataAccessServiceImpl implements DataAccessService {
 	OrganizationRepository orgRepo;
 	@Autowired
 	ViewOrgsWithLinkNumRepository viewOrgsWithLinkNumRepo;
+	@Autowired
+	DatasetAppRegistrationRepository participationsRepo;
+
+	@Autowired
+	ViewApprovedAppRegistrations approvedAppParticipationsRepo;
+
+	@Autowired
+	ViewApprovedApplications approvedAppsRepo;
 
 	public boolean isAdmin() {
 		for (GrantedAuthority role : SecurityContextHolder.getContext().getAuthentication().getAuthorities()) {
@@ -112,6 +125,21 @@ public class DataAccessServiceImpl implements DataAccessService {
 	@Override
 	public List<OrganizationWithLinkNum> getAllOrganizationsWithLinkNum() {
 		return viewOrgsWithLinkNumRepo.findAll();
+	}
+
+	@Override
+	public List<ApprovedApplication> getApprovedApplications() {
+		return approvedAppsRepo.findAll();
+	}
+
+	@Override
+	public ApprovedApplication getDatasetApplication(long id) {
+		return approvedAppsRepo.getOne(id);
+	}
+
+	@Override
+	public List<DatasetApplicationRegistration> getAppDatasetParticipations(long id) {
+		return participationsRepo.findByDatasetApplicationId(id);
 	}
 
 }

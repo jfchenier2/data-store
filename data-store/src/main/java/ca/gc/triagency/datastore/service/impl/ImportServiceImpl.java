@@ -3,6 +3,7 @@ package ca.gc.triagency.datastore.service.impl;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -39,26 +40,31 @@ public class ImportServiceImpl implements ImportService {
 	}
 
 	public void importAgencies() {
-		Agency sshrc, nserc, cihr;
-		sshrc = agencyRepo.save(new Agency("Social Sciences and Humanities Research Council",
-				"Conseil de recherches en sciences humaines", "SSHRC", "CRSH"));
-		cihr = agencyRepo.save(new Agency("Canadian Institutes of Health Research",
-				"Instituts de recherche en santé du Canada", "CIHR", "CRSC"));
-		nserc = agencyRepo.save(nserc = new Agency("Natural Sciences and Engineering Research Council of Canada",
-				"Conseil de recherches en sciences naturelles et en génie du Canada", "NSERC", "CRSNG"));
-
+		List<Agency> list = agencyRepo.findAll();
+		if(list.isEmpty()) {
+			Agency sshrc, nserc, cihr;
+			sshrc = new Agency("Social Sciences and Humanities Research Council",
+					"Conseil de recherches en sciences humaines", "SSHRC", "CRSH");
+			cihr = new Agency("Canadian Institutes of Health Research",
+					"Instituts de recherche en santé du Canada", "CIHR", "CRSC");
+			nserc = new Agency("Natural Sciences and Engineering Research Council of Canada",
+					"Conseil de recherches en sciences naturelles et en génie du Canada", "NSERC", "CRSNG");
+	
+			agencyRepo.saveAndFlush(sshrc);
+			agencyRepo.saveAndFlush(cihr);
+			agencyRepo.saveAndFlush(nserc);
+			list = agencyRepo.findAll();
+		}
 		agencyMap = new HashMap<String, Agency>();
-		agencyMap.put(sshrc.getAcronymEn(), sshrc);
-		agencyMap.put(cihr.getAcronymEn(), cihr);
-		agencyMap.put(nserc.getAcronymEn(), nserc);
-		agencyRepo.saveAll(agencyMap.values());
+		for(Agency a : list) {
+			agencyMap.put(a.getAcronymEn(), a);
+		}
 	}
 
 	public void importProgramsFromFile() {
 
-		if (agencyMap == null) {
-			importAgencies();
-		}
+		importAgencies();
+
 		Collection<ProgramFromFile> programsFromFile = extractProgramsFromFile("programFile.xlsm");
 		for (ProgramFromFile p : programsFromFile) {
 			Program newProgram = new Program();
@@ -81,7 +87,7 @@ public class ImportServiceImpl implements ImportService {
 				p.setNumberOfAgencies("Single");
 			}
 			String numAgencyText = p.getNumberOfAgencies().toLowerCase();
-			if (numAgencyText.indexOf("single", 0) >= 0) {
+			if (numAgencyText.indexOf("single", 0) >= 0) {	
 				newProgram.getAgencies().add(leadAgency);
 			} else {
 				if (numAgencyText.indexOf("tri") >= 0) {

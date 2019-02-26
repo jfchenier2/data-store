@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,6 +38,7 @@ import ca.gc.triagency.datastore.model.DatasetProgram;
 import ca.gc.triagency.datastore.model.EntityLinkOrganization;
 import ca.gc.triagency.datastore.model.EntityLinkProgram;
 import ca.gc.triagency.datastore.model.Organization;
+import ca.gc.triagency.datastore.model.ParticipationEdiData;
 import ca.gc.triagency.datastore.model.Program;
 import ca.gc.triagency.datastore.model.file.ApplyDatasetRow;
 import ca.gc.triagency.datastore.model.file.AwardDatasetRow;
@@ -53,6 +55,7 @@ import ca.gc.triagency.datastore.repo.DatasetRepository;
 import ca.gc.triagency.datastore.repo.EntityLinkOrgRepository;
 import ca.gc.triagency.datastore.repo.EntityLinkProgramRepository;
 import ca.gc.triagency.datastore.repo.OrganizationRepository;
+import ca.gc.triagency.datastore.repo.ParticipationEdiDataRepository;
 import ca.gc.triagency.datastore.repo.ProgramRepository;
 import ca.gc.triagency.datastore.service.DatasetService;
 
@@ -103,6 +106,9 @@ public class DatasetServiceImpl implements DatasetService {
 	@Autowired
 	DatasetAppRegistrationRepository appRegistrationRepo;
 
+	@Autowired
+	ParticipationEdiDataRepository ediRepo;
+
 	@Override
 	public List<Dataset> getAllDatasets() {
 		return datasetRepo.findAll();
@@ -144,8 +150,7 @@ public class DatasetServiceImpl implements DatasetService {
 	public void uploadAwardData(Dataset dataset) {
 		HashMap<Long, DatasetApplication> datasetAppsHash = new HashMap<Long, DatasetApplication>();
 		Long parentDatasetId = dataset.getParentDataset().getId();
-		List<DatasetApplication> relevantApps = datasetApplicationRepo
-				.findByDatasetId(parentDatasetId);
+		List<DatasetApplication> relevantApps = datasetApplicationRepo.findByDatasetId(parentDatasetId);
 		for (DatasetApplication app : relevantApps) {
 			datasetAppsHash.put(app.getExtId(), app);
 		}
@@ -161,7 +166,7 @@ public class DatasetServiceImpl implements DatasetService {
 			DatasetAward award = new DatasetAward();
 			row.fixApplicationId();
 			row.fixPersonId();
-			if(row.getAwardedAmmount() == null || row.getAwardedAmmount().contains("NULL")) {
+			if (row.getAwardedAmmount() == null || row.getAwardedAmmount().contains("NULL")) {
 				continue;
 			}
 			rownum++;
@@ -306,7 +311,10 @@ public class DatasetServiceImpl implements DatasetService {
 				personHash.put("" + currentPerson.getExtId(), currentPerson);
 				System.out.println("created DatasetPerson: " + currentPerson);
 			}
+			ParticipationEdiData ediData = generateRandomEdi();
+			ediData = ediRepo.save(ediData);
 			DatasetApplicationRegistration appRegistration = new DatasetApplicationRegistration();
+			appRegistration.setParticipationEdiData(ediData);
 			appRegistration.setDatasetOrganization(currentOrg);
 			appRegistration.setPerson(currentPerson);
 			appRegistration.setRegistrationRole(currentAppRole);
@@ -319,6 +327,72 @@ public class DatasetServiceImpl implements DatasetService {
 		}
 		dataset.setTotalRecords(rowNum);
 		datasetRepo.save(dataset);
+
+	}
+
+	private ParticipationEdiData generateRandomEdi() {
+		ParticipationEdiData retval = new ParticipationEdiData();
+		String[] genderOptions = { "Man", "Woman", "Other" };
+		String[] indIdentityOptions = { "Dakelh", "Haida", "Huron", "Innu", "Iroquois", "Kichesipirni", "Mi'kmaq",
+				"Syilx" };
+
+		String[] visMinorityOptions = { "South Asian", "Chinese", "Black", "Latin American", "Arab", "Southest Asian",
+				"West Asian", "Korean", "Japanese" };
+
+		String[] disabilityOptions = { "Death", "Blind", "Physical", "Other" };
+
+		Random random = new Random();
+
+		int genderRandom = random.nextInt(10);
+		int genderIndex = genderRandom / 5;
+		retval.setGenderSelection(genderOptions[genderIndex]);
+
+		retval.setVisMinRespPreferNot(false);
+		int vizMinIndex = random.nextInt(visMinorityOptions.length - 1);
+		if (vizMinIndex >= 4) {
+			if (vizMinIndex == visMinorityOptions.length - 1) {
+				retval.setVisMinRespPreferNot(true);
+			} else {
+				retval.setVisibleMinorityResponse(visMinorityOptions[random.nextInt(visMinorityOptions.length - 1)]);
+			}
+		}
+
+		retval.setIndIdRespPreferNot(false);
+		int indIdentityIndex = random.nextInt(indIdentityOptions.length - 1);
+		if (indIdentityIndex > 5) {
+			if (indIdentityIndex == indIdentityOptions.length - 1) {
+				retval.setIndIdRespPreferNot(true);
+			} else {
+				retval.setIndIdentityResponse(indIdentityOptions[random.nextInt(indIdentityOptions.length - 1)]);
+			}
+		}
+
+		int randomAge = random.nextInt(50);
+		if (randomAge <= 5) {
+			retval.setDateOfBirthPreferNot(true);
+		} else {
+			if (randomAge <= 17) {
+				randomAge += 12;
+			}
+			try {
+				retval.setDateOfBirth(new SimpleDateFormat("yyyy-MM-dd").parse("" + (2019 - randomAge) + "-1-1"));
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		retval.setDisabilityRespPreferNot(false);
+		int disabilityRand = random.nextInt(20);
+		if (disabilityRand >= 19) {
+			int disabilityIndex = random.nextInt(disabilityOptions.length);
+			if (disabilityIndex == disabilityOptions.length) {
+				retval.setDisabilityRespPreferNot(true);
+			} else {
+				retval.setDisabilityResponse(disabilityOptions[disabilityIndex]);
+			}
+		}
+		return retval;
 
 	}
 
@@ -440,7 +514,8 @@ public class DatasetServiceImpl implements DatasetService {
 		boolean retval = false;
 		Dataset ds = datasetRepo.getOne(id);
 		if (ds != null) {
-			List<Dataset> approvedDatasets = datasetRepo.findByDatasetStatusAndDatasetType(DatasetStatus.APPROVED, ds.getDatasetType());
+			List<Dataset> approvedDatasets = datasetRepo.findByDatasetStatusAndDatasetType(DatasetStatus.APPROVED,
+					ds.getDatasetType());
 			for (Dataset set : approvedDatasets) {
 				if (set.getDatasetConfiguration().getId() == ds.getDatasetConfiguration().getId()) {
 					set.setDatasetStatus(DatasetStatus.TO_DELETE);

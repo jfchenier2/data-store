@@ -8,7 +8,22 @@ create or replace view data_store.report_approved_applications as
 		join agency a on p.lead_agency_id=a.id
 		where ds.dataset_status like 'APPROVED';
 
-create or replace view data_store.report_approved_application_participations as 
+create or replace view data_store.report_approved_application_participations_edi as 
+	select pea.*, app.ext_id as appl_id, p.id as program_id,  p.name_en as program_name_en, p.name_fr as program_name_fr, a.id as agency_id, a.acronym_en agency_name_en, a.acronym_fr as agency_name_fr, o.id as org_id, o.name_en as org_name_en, o.name_fr as org_name_fr, ds_org.city as org_city, ds_org.postal_zip_code as postal_zip_code
+		from dataset_application app
+		join dataset ds on app.dataset_id=ds.id
+		join dataset_program ds_program on app.dataset_program_id=ds_program.id
+		join entity_link_program elp on ds_program.entity_link_id=elp.id
+		join program p on elp.program_id=p.id
+		left join agency a on p.lead_agency_id=a.id
+		join dataset_application_registration ds_ar on ds_ar.dataset_application_id=app.id
+		join dataset_organization ds_org on ds_ar.dataset_organization_id=ds_org.id
+		join entity_link_organization elo on ds_org.entity_link_id=elo.id
+		join organization o on elo.org_id=o.id
+		join participation_edi_data pea on ds_ar.participation_edi_data_id=pea.id
+		where ds.dataset_status like 'APPROVED';
+
+		create or replace view data_store.report_approved_application_participations as 
 	select ds_ar.id as id, app.ext_id as appl_id, p.id as program_id,  p.name_en as program_name_en, p.name_fr as program_name_fr, a.id as agency_id, a.acronym_en agency_name_en, a.acronym_fr as agency_name_fr, o.id as org_id, o.name_en as org_name_en, o.name_fr as org_name_fr, ds_org.city as org_city, ds_org.postal_zip_code as postal_zip_code
 		from dataset_application app
 		join dataset ds on app.dataset_id=ds.id

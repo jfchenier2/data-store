@@ -46,11 +46,12 @@ create or replace view data_store.report_approved_awards as
 		join entity_link_program elp on ds_program.entity_link_id=elp.id
 		join program p on elp.program_id=p.id
 		join agency a on p.lead_agency_id=a.id
-		join dataset_application_registration ds_ar on ds_ar.dataset_application_id=app.id and ds_ar.dataset_person_id=award.dataset_person_id
+		join dataset_application_registration ds_ar on ds_ar.dataset_application_id=app.id
 		join dataset_organization ds_org on ds_ar.dataset_organization_id=ds_org.id
 		join entity_link_organization elo on ds_org.entity_link_id=elo.id
 		join organization o on elo.org_id=o.id
 		where ds.dataset_status like 'APPROVED';
+--		join dataset_application_registration ds_ar on ds_ar.dataset_application_id=app.id and ds_ar.dataset_person_id=award.dataset_person_id
 		
 		
 create or replace view data_store.report_application_registrations_per_organization as 

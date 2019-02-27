@@ -155,7 +155,7 @@ public class DatasetServiceImpl implements DatasetService {
 			datasetAppsHash.put(app.getExtId(), app);
 		}
 
-		HashMap<Long, DatasetPerson> datasetPersonHash = new HashMap<Long, DatasetPerson>();
+		HashMap<String, DatasetPerson> datasetPersonHash = new HashMap<String, DatasetPerson>();
 		List<DatasetPerson> relevantPersons = datasetPersonRepo.findAll(); // fixme
 		for (DatasetPerson p : relevantPersons) {
 			datasetPersonHash.put(p.getExtId(), p);
@@ -204,7 +204,7 @@ public class DatasetServiceImpl implements DatasetService {
 		}
 		HashMap<String, DatasetProgram> programHash = new HashMap<String, DatasetProgram>();
 		HashMap<String, DatasetAppRegistrationRole> roleHash = new HashMap<String, DatasetAppRegistrationRole>();
-		HashMap<Long, DatasetOrganization> orgHash = new HashMap<Long, DatasetOrganization>();
+		HashMap<String, DatasetOrganization> orgHash = new HashMap<String, DatasetOrganization>();
 		HashMap<String, DatasetPerson> personHash = new HashMap<String, DatasetPerson>();
 
 		// fill repos with relevant config lookups
@@ -269,6 +269,9 @@ public class DatasetServiceImpl implements DatasetService {
 				currentApplication.setCreateDateTime(parsedDate);
 				currentApplication.setExtIdentifier(row.getApplicationIdentifier());
 				row.fixApplId();
+				if(row.getApplId().contains("-")) {
+					row.setApplId(row.getApplId().replace('-', '0'));
+				}
 				currentApplication.setExtId(Long.parseLong(row.getApplId()));
 				currentApplication = datasetApplicationRepo.save(currentApplication);
 
@@ -285,11 +288,11 @@ public class DatasetServiceImpl implements DatasetService {
 				System.out.println("created DatasetAppRegistrationRole: " + currentAppRole);
 			}
 			row.fixOrgId();
-			Long rowOrgId = new Long(row.getOrgId());
-			currentOrg = orgHash.get(rowOrgId);
+			//Long rowOrgId = new Long(row.getOrgId());
+			currentOrg = orgHash.get(row.getOrgId());
 			if (currentOrg == null) {
 				currentOrg = new DatasetOrganization();
-				currentOrg.setExtId(rowOrgId);
+				currentOrg.setExtId(row.getOrgId());
 				currentOrg.setNameEn(row.getOrgNameEn());
 				currentOrg.setNameFr(row.getOrgNameFr());
 				currentOrg.setDataset(dataset);
@@ -304,7 +307,7 @@ public class DatasetServiceImpl implements DatasetService {
 			currentPerson = personHash.get(row.getPersonIdentifier());
 			if (currentPerson == null) {
 				currentPerson = new DatasetPerson();
-				currentPerson.setExtId(Long.parseLong(row.getPersonIdentifier()));
+				currentPerson.setExtId(row.getPersonIdentifier());
 				currentPerson.setFamilyName(row.getFamilyName());
 				currentPerson.setGivenName(row.getGivenName());
 				currentPerson = datasetPersonRepo.save(currentPerson);

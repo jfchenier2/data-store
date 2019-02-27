@@ -129,11 +129,11 @@ public class DataSetup {
 
 			GrantSystemCapability amisAwardsCapability = new GrantSystemCapability();
 			amisAwardsCapability.setGrantingSystem(amis);
-			amisAwardsCapability.setGrantingFunction(GrantingFunction.APPLY);
-			amisAwardsCapability.setNameEn("AMIS Applications");
-			amisAwardsCapability.setNameFr("Applications de AMIS");
-			amisAwardsCapability.setAcronymEn("AMIS_APPS");
-			amisAwardsCapability.setAcronymFr("AMIS_APPS");
+			amisAwardsCapability.setGrantingFunction(GrantingFunction.AWARD);
+			amisAwardsCapability.setNameEn("AMIS Awards");
+			amisAwardsCapability.setNameFr("Prix de AMIS");
+			amisAwardsCapability.setAcronymEn("AMIS_AWARDS");
+			amisAwardsCapability.setAcronymFr("AMIS_AWARDS");
 			systemCapacityRepo.save(amisAwardsCapability);
 
 			DatasetConfiguration amisAwardsConfig = new DatasetConfiguration();

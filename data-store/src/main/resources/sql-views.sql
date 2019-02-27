@@ -23,7 +23,7 @@ create or replace view data_store.report_approved_application_participations_edi
 		join participation_edi_data pea on ds_ar.participation_edi_data_id=pea.id
 		where ds.dataset_status like 'APPROVED';
 
-		create or replace view data_store.report_approved_application_participations as 
+create or replace view data_store.report_approved_application_participations as 
 	select ds_ar.id as id, app.ext_id as appl_id, p.id as program_id,  p.name_en as program_name_en, p.name_fr as program_name_fr, a.id as agency_id, a.acronym_en agency_name_en, a.acronym_fr as agency_name_fr, o.id as org_id, o.name_en as org_name_en, o.name_fr as org_name_fr, ds_org.city as org_city, ds_org.postal_zip_code as postal_zip_code
 		from dataset_application app
 		join dataset ds on app.dataset_id=ds.id

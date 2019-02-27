@@ -11,7 +11,7 @@ public class DatasetPerson {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	private Long extId;
+	private String extId;
 
 	private String familyName;
 	private String givenName;
@@ -25,11 +25,11 @@ public class DatasetPerson {
 		return id;
 	}
 
-	public Long getExtId() {
+	public String getExtId() {
 		return extId;
 	}
 
-	public void setExtId(Long extId) {
+	public void setExtId(String extId) {
 		this.extId = extId;
 	}
 

@@ -32,6 +32,9 @@ public class DatasetAward implements LocalizedParametersModel {
 	@Temporal(TemporalType.DATE)
 	private Date programYear;
 
+	//@Temporal(TemporalType.DATE)
+	private Date fundingYear;
+
 	public DatasetApplication getDatasetApplication() {
 		return datasetApplication;
 	}
@@ -66,6 +69,14 @@ public class DatasetAward implements LocalizedParametersModel {
 
 	public Long getId() {
 		return id;
+	}
+
+	public Date getFundingYear() {
+		return fundingYear;
+	}
+
+	public void setFundingYear(Date fundingYear) {
+		this.fundingYear = fundingYear;
 	}
 
 }

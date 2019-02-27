@@ -3,6 +3,8 @@ package ca.gc.triagency.datastore.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import ca.gc.triagency.datastore.model.ApplicationRegistrationsPerOrganization;
@@ -28,6 +30,29 @@ public class ReportServiceImpl implements ReportService {
 	@Autowired
 	ViewApprovedAwards viewApprovedAwards;
 
+	public boolean isAdmin() {
+		for (GrantedAuthority role : SecurityContextHolder.getContext().getAuthentication().getAuthorities()) {
+			if (role.getAuthority().compareTo("ROLE_ADMIN") == 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public String getUserAgencyAcronym() {
+		String agencyAcronym = null;
+		for (GrantedAuthority role : SecurityContextHolder.getContext().getAuthentication().getAuthorities()) {
+			if (role.getAuthority().compareTo("ROLE_SSHRC") == 0) {
+				agencyAcronym = "SSHRC";
+
+			} else if (role.getAuthority().compareTo("ROLE_NSERC") == 0) {
+				agencyAcronym = "NSERC";
+			}
+		}
+		return agencyAcronym;
+
+	}
+
 	@Override
 	public List<ApplicationRegistrationsPerOrganization> getApplicationsPerOrganization() {
 		return appsPerOrgRepo.findAll();
@@ -40,12 +65,20 @@ public class ReportServiceImpl implements ReportService {
 
 	@Override
 	public List<ApprovedAward> getApprovedAwards() {
-		return viewApprovedAwards.findAll();
+		if (isAdmin()) {
+			return viewApprovedAwards.findAll();
+		} else {
+			return viewApprovedAwards.findByAgencyNameEn(getUserAgencyAcronym());
+		}
 	}
 
 	@Override
 	public List<ApprovedApplicationParticipation> getApprovedAppParticipations() {
-		return viewApprovedAppRegistrations.findAll();
+		if (isAdmin()) {
+			return viewApprovedAppRegistrations.findAll();
+		} else {
+			return viewApprovedAppRegistrations.findByAgencyNameEn(getUserAgencyAcronym());
+		}
 	}
 
 }

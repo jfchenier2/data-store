@@ -29,6 +29,10 @@ public class DatasetApplicationRegistration {
 	@JoinColumn(name = "dataset_organization_id")
 	private DatasetOrganization datasetOrganization;
 
+	@ManyToOne
+	@JoinColumn(name = "participation_edi_data_id")
+	private ParticipationEdiData participationEdiData;
+
 	public Long getId() {
 		return id;
 	}
@@ -63,6 +67,14 @@ public class DatasetApplicationRegistration {
 
 	public void setDatasetApplication(DatasetApplication datasetApplication) {
 		this.datasetApplication = datasetApplication;
+	}
+
+	public ParticipationEdiData getParticipationEdiData() {
+		return participationEdiData;
+	}
+
+	public void setParticipationEdiData(ParticipationEdiData participationEdiData) {
+		this.participationEdiData = participationEdiData;
 	}
 
 }

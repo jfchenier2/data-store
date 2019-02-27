@@ -10,12 +10,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import ca.gc.triagency.datastore.model.Agency;
+import ca.gc.triagency.datastore.model.ApprovedApplication;
+import ca.gc.triagency.datastore.model.DatasetApplicationRegistration;
 import ca.gc.triagency.datastore.model.Organization;
 import ca.gc.triagency.datastore.model.Program;
 import ca.gc.triagency.datastore.model.view.OrganizationWithLinkNum;
 import ca.gc.triagency.datastore.repo.AgencyRepository;
+import ca.gc.triagency.datastore.repo.DatasetAppRegistrationRepository;
 import ca.gc.triagency.datastore.repo.OrganizationRepository;
 import ca.gc.triagency.datastore.repo.ProgramRepository;
+import ca.gc.triagency.datastore.repo.ViewApprovedAppRegistrations;
+import ca.gc.triagency.datastore.repo.ViewApprovedApplications;
 import ca.gc.triagency.datastore.repo.view.ViewOrgsWithLinkNumRepository;
 import ca.gc.triagency.datastore.service.DataAccessService;
 
@@ -32,27 +37,46 @@ public class DataAccessServiceImpl implements DataAccessService {
 	OrganizationRepository orgRepo;
 	@Autowired
 	ViewOrgsWithLinkNumRepository viewOrgsWithLinkNumRepo;
+	@Autowired
+	DatasetAppRegistrationRepository participationsRepo;
 
-	@Override
-	public List<Program> getAllPrograms() {
-		boolean isAdmin = false, isSSHRC = false, isNSERC = false;
-		String agencyAcronym = null;
+	@Autowired
+	ViewApprovedAppRegistrations approvedAppParticipationsRepo;
+
+	@Autowired
+	ViewApprovedApplications approvedAppsRepo;
+
+	public boolean isAdmin() {
 		for (GrantedAuthority role : SecurityContextHolder.getContext().getAuthentication().getAuthorities()) {
 			if (role.getAuthority().compareTo("ROLE_ADMIN") == 0) {
-				isAdmin = true;
-			} else if (role.getAuthority().compareTo("ROLE_SSHRC") == 0) {
-				isSSHRC = true;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public String getUserAgencyAcronym() {
+		String agencyAcronym = null;
+		for (GrantedAuthority role : SecurityContextHolder.getContext().getAuthentication().getAuthorities()) {
+			if (role.getAuthority().compareTo("ROLE_SSHRC") == 0) {
 				agencyAcronym = "SSHRC";
 
 			} else if (role.getAuthority().compareTo("ROLE_NSERC") == 0) {
-				isNSERC = true;
 				agencyAcronym = "NSERC";
 			}
 		}
+		return agencyAcronym;
+
+	}
+
+	@Override
+	public List<Program> getAllPrograms() {
+		String agencyAcronym = null;
 		List<Program> retval = null;
-		if (isAdmin) {
+		if (isAdmin()) {
 			retval = programRepo.findAll();
 		} else {
+			agencyAcronym = getUserAgencyAcronym();
 			retval = programRepo.findByLeadAgencyAcronymEn(agencyAcronym);
 		}
 		return retval;
@@ -101,6 +125,21 @@ public class DataAccessServiceImpl implements DataAccessService {
 	@Override
 	public List<OrganizationWithLinkNum> getAllOrganizationsWithLinkNum() {
 		return viewOrgsWithLinkNumRepo.findAll();
+	}
+
+	@Override
+	public List<ApprovedApplication> getApprovedApplications() {
+		return approvedAppsRepo.findAll();
+	}
+
+	@Override
+	public ApprovedApplication getDatasetApplication(long id) {
+		return approvedAppsRepo.getOne(id);
+	}
+
+	@Override
+	public List<DatasetApplicationRegistration> getAppDatasetParticipations(long id) {
+		return participationsRepo.findByDatasetApplicationId(id);
 	}
 
 }

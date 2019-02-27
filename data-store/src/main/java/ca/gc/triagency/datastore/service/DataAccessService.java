@@ -3,6 +3,8 @@ package ca.gc.triagency.datastore.service;
 import java.util.List;
 
 import ca.gc.triagency.datastore.model.Agency;
+import ca.gc.triagency.datastore.model.ApprovedApplication;
+import ca.gc.triagency.datastore.model.DatasetApplicationRegistration;
 import ca.gc.triagency.datastore.model.Organization;
 import ca.gc.triagency.datastore.model.Program;
 import ca.gc.triagency.datastore.model.view.OrganizationWithLinkNum;
@@ -28,5 +30,11 @@ public interface DataAccessService {
 	public Organization getOrganization(Long orgId);
 
 	public List<OrganizationWithLinkNum> getAllOrganizationsWithLinkNum();
+
+	public List<ApprovedApplication> getApprovedApplications();
+
+	public ApprovedApplication getDatasetApplication(long id);
+
+	public List<DatasetApplicationRegistration> getAppDatasetParticipations(long id);
 
 }

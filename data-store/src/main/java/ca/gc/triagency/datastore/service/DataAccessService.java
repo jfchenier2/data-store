@@ -4,6 +4,7 @@ import java.util.List;
 
 import ca.gc.triagency.datastore.model.Agency;
 import ca.gc.triagency.datastore.model.ApprovedApplication;
+import ca.gc.triagency.datastore.model.ApprovedApplicationParticipation;
 import ca.gc.triagency.datastore.model.DatasetApplicationRegistration;
 import ca.gc.triagency.datastore.model.Organization;
 import ca.gc.triagency.datastore.model.Program;
@@ -36,5 +37,10 @@ public interface DataAccessService {
 	public ApprovedApplication getDatasetApplication(long id);
 
 	public List<DatasetApplicationRegistration> getAppDatasetParticipations(long id);
+
+	public List<ApprovedApplicationParticipation> getApprovedParticipations();
+
+	public DatasetApplicationRegistration getAppDatasetParticipation(long id);
+	
 
 }

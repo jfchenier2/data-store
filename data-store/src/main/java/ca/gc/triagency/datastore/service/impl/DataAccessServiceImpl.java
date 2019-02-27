@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import ca.gc.triagency.datastore.model.Agency;
 import ca.gc.triagency.datastore.model.ApprovedApplication;
+import ca.gc.triagency.datastore.model.ApprovedApplicationParticipation;
 import ca.gc.triagency.datastore.model.DatasetApplicationRegistration;
 import ca.gc.triagency.datastore.model.Organization;
 import ca.gc.triagency.datastore.model.Program;
@@ -129,7 +130,13 @@ public class DataAccessServiceImpl implements DataAccessService {
 
 	@Override
 	public List<ApprovedApplication> getApprovedApplications() {
+		if (isAdmin()) {
 		return approvedAppsRepo.findAll();
+		} else {
+			String agencyAcronym = getUserAgencyAcronym();
+			return approvedAppsRepo.findByAgencyNameEn(agencyAcronym);
+			
+		}
 	}
 
 	@Override
@@ -140,6 +147,21 @@ public class DataAccessServiceImpl implements DataAccessService {
 	@Override
 	public List<DatasetApplicationRegistration> getAppDatasetParticipations(long id) {
 		return participationsRepo.findByDatasetApplicationId(id);
+	}
+
+	@Override
+	public List<ApprovedApplicationParticipation> getApprovedParticipations() {
+		if (isAdmin()) {
+			return approvedAppParticipationsRepo.findAll();
+		} else {
+			String agencyAcronym = getUserAgencyAcronym();
+			return approvedAppParticipationsRepo.findByAgencyNameEn(agencyAcronym);
+		}
+	}
+
+	@Override
+	public DatasetApplicationRegistration getAppDatasetParticipation(long id) {
+		return participationsRepo.getOne(id);
 	}
 
 }

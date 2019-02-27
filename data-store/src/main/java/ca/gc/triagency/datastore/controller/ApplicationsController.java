@@ -39,4 +39,15 @@ public class ApplicationsController {
 		return "entities/applications/viewApplication";
 	}
 
+	@GetMapping(value = "/viewParticipation")
+	public String viewParticipation(@RequestParam("id") long id, Model model) {
+		model.addAttribute("participation", dataService.getAppDatasetParticipation(id));
+		return "entities/applications/viewParticipation";
+	}
+
+	@RequestMapping(value = "/participations", method = RequestMethod.GET)
+	public String participations(Model model) {
+		model.addAttribute("participations", dataService.getApprovedParticipations());
+		return "entities/applications/participations";
+	}
 }

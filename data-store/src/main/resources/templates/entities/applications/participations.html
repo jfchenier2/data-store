@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/general.html :: common_header(~{::title},~{::link},~{::script})}">
+	<title th:utext="#{entities.applications.participations.title}"></title>
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
+	<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready( function () {
+			var table = $('#dataTable').DataTable({});
+		});
+	</script>
+</head>
+<body>
+	<div th:insert="~{fragments/general.html :: header_nav('entities')}" ></div>
+	<div class="section">
+			<div class="col-sm-2"></div>
+			<div class="col-sm-8">
+				<h1 th:utext="#{entities.applications.participations.title}"></h1>
+				<p th:utext="#{entities.applications.participations.description}"></p>
+				<table id="dataTable" class="display">
+			       <!-- Header Table -->
+			       <thead>
+			            <tr>
+			                <th>External ID</th>
+			                <th>Program</th>
+			                <th>Program Year</th>
+			            </tr>
+			        </thead>
+			        <tbody>
+						<tr th:each="app : ${apps}">
+							<td><a th:href="@{viewApplication(id=${app.id})}" th:text="${app.applId}"></a></td>
+							<td><a th:href="@{../programs/viewProgram(id=${app.programId})}" th:text="${app.getLocalizedAttribute('programName')}"></a></td>
+							<td th:text="${app.programYear}" />
+						</tr>
+					</tbody>
+			    </table>
+			</div>
+			<div class="col-sm-2"></div>
+
+	</div>    
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/general.html :: common_header(~{::title},~{},~{})}">
+	<title>Data store - View Participation</title>
+</head>
+<body>
+	<div th:insert="~{fragments/general.html :: header_nav('entities')}" />
+	<div class="container">
+		<h1>View Participation</h1>
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label">Program</div>
+			<div class="col-sm-10" th:text="${participation.datasetApplication.datasetProgram.getLocalizedAttribute('name')}"></div>
+		</div>
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label">Application Identifier</div>
+			<div class="col-sm-10" th:text="${participation.datasetApplication.extIdentifier}"></div>
+		</div>
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label">Person Family Name</div>
+			<div class="col-sm-10" th:text="${participation.person.familyName}"></div>
+		</div>
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label">Person Given Name</div>
+			<div class="col-sm-10" th:text="${participation.person.givenName}"></div>
+		</div>
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label" th:utext="#{form.agency}">Agency</div>
+			<div class="col-sm-10" th:text="${participation.datasetApplication.datasetProgram.leadAgency.getLocalizedAttribute('name')}"></div>
+		</div>
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label">Gender Selection</div>
+			<div class="col-sm-10" th:text="${participation.participationEdiData.genderSelection}"></div>
+		</div>
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label">Disability Response</div>
+			<div class="col-sm-10" th:text="${participation.participationEdiData.disabilityResponse}"></div>
+		</div>
+		<div class="form-group row">
+			<div class="col-sm-2 col-form-label">Visible Minority Selection</div>
+			<div class="col-sm-10" th:text="${participation.participationEdiData.visibleMinorityResponse}"></div>
+		</div>
+	</div>
+   </body>
+</html>
+

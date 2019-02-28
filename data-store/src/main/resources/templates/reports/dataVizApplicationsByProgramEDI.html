@@ -1,0 +1,13 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/general.html :: common_header(~{::title},~{},~{})}">
+<title>Data store - Reports</title>
+</head>
+<body>
+	<div th:insert="~{fragments/general.html :: header_nav('reports')}" />
+	<div class="container">
+		<h1 th:utext="#{reports.dataVizApplicationsByProgramEDI.title}"></h1>
+        <p th:utext="#{reports.dataVizApplicationsByProgramEDI.description}"></p>
+        <script type='text/javascript' src='http://52.60.77.3/javascripts/api/viz_v1.js'></script><div class='tableauPlaceholder' style='width: 1000px; height: 827px;'><object class='tableauViz' width='1000' height='827' style='display:none;'><param name='host_url' value='http%3A%2F%2F52.60.77.3%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='&#47;t&#47;PoC_AD_Test' /><param name='name' value='NSERC_PoCApplicationByProgramEDI&#47;Dashboard1' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='showAppBanner' value='false' /><param name='filter' value='iframeSizedToWindow=true' /></object></div>
+   </body>
+</html>

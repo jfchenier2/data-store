@@ -80,4 +80,14 @@ public class ReportsController {
 	public String dataVizParticipantsByProgram() {
 		return "reports/dataVizParticipantsByProgram";
 	}
+	
+	@GetMapping(value = "/dataVizApplicationsByLocationEDI")
+	public String dataVizApplicationsByLocationEDI() {
+		return "reports/dataVizApplicationsByLocationEDI";
+	}
+	
+	@GetMapping(value = "/dataVizApplicationsByProgramEDI")
+	public String dataVizApplicationsByProgramEDI() {
+		return "reports/dataVizApplicationsByProgramEDI";
+	}
 }

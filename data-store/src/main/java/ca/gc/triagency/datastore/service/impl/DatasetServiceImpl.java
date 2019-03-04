@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.ebay.xcelite.Xcelite;
@@ -146,6 +147,7 @@ public class DatasetServiceImpl implements DatasetService {
 		return list;
 	}
 
+	@Async
 	@Override
 	public void uploadAwardData(Dataset dataset) {
 		HashMap<Long, DatasetApplication> datasetAppsHash = new HashMap<Long, DatasetApplication>();
@@ -185,12 +187,16 @@ public class DatasetServiceImpl implements DatasetService {
 			}
 			datasetAwardRepo.save(award);
 
+//			if(rownum % 10 == 0) {
+//				datasetRepo.save(dataset);
+//			}
 		}
 		dataset.setTotalRecords(rownum);
 		datasetRepo.save(dataset);
 
 	}
 
+	@Async
 	@Override
 	public void uploadData(Dataset dataset) {
 		List<Agency> agencies = agencyRepo.findAll();
@@ -325,6 +331,10 @@ public class DatasetServiceImpl implements DatasetService {
 			appRegistrationRepo.save(appRegistration);
 			System.out.println("created DatasetOrganization: " + appRegistration);
 
+//			if(rowNum % 10 == 0) {
+//				datasetRepo.save(dataset);
+//			}
+			
 			System.out.println("Row #" + rowNum++);
 			dataset.setCurrentRow(rowNum);
 		}

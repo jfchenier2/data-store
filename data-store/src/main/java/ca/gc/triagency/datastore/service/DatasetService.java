@@ -3,6 +3,8 @@ package ca.gc.triagency.datastore.service;
 import java.io.File;
 import java.util.List;
 
+import org.springframework.scheduling.annotation.Async;
+
 import ca.gc.triagency.datastore.model.Agency;
 import ca.gc.triagency.datastore.model.Dataset;
 import ca.gc.triagency.datastore.model.DatasetConfiguration;
@@ -26,7 +28,8 @@ public interface DatasetService {
 	public DatasetConfiguration getDatasetConfiguration(long id);
 
 	public List<File> getDatasetFiles();
-
+	
+	@Async
 	public void uploadData(Dataset dataset);
 
 	public Dataset configureNewDatasetFromFilename(String filename);
@@ -63,6 +66,7 @@ public interface DatasetService {
 
 	public List<EntityLinkOrganization> getDatasetConfigOrgLinks(long id);
 
+	@Async
 	public void uploadAwardData(Dataset dataset);
 
 }

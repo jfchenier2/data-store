@@ -65,7 +65,6 @@ public class DatasetController {
 		return "datasets/createAwardDatasetValidate";
 	}
 
-	//@Async
 	@PostMapping(value = "/createAwardDataset")
 	public String createAwardDatasetPost(@RequestParam long id, @RequestParam String filename) {
 		Dataset form = datasetService.configureNewDatasetFromFilename(filename);
@@ -90,7 +89,6 @@ public class DatasetController {
 		return "datasets/createDatasetValidate";
 	}
 
-	//@Async
 	@PostMapping(value = "/createDataset")
 	public String createDatasetPost(@RequestParam String filename) {
 		Dataset form = datasetService.configureNewDatasetFromFilename(filename);

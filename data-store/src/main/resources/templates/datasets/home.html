@@ -23,17 +23,8 @@
 			                <th>Current record</th>
 			                <th>Warnings</th>
 			            </tr>
-				</thead>
-				<tbody>
-					<tr th:each="dataset : ${datasets}">
-						<td><a th:href="@{viewDataset(id=${dataset.id})}" th:text="${dataset.datasetConfiguration.getLocalizedAttribute('name')}"></a></td>
-						<td th:text="${dataset.createDateTime}"></td>
-						<td th:text="${dataset.datasetStatus}"></td>
-						<td th:text="${dataset.totalRecords}"></td>
-						<td th:text="${dataset.currentRow}"></td>
-						<td>todo</td>
-					</tr>
-				</tbody>
+					</thead>
+
 			        <tfoot>
 			            <tr>
 			                <th>Config Type</th>

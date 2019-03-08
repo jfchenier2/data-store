@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import ca.gc.triagency.datastore.form.ProgramForm;
 import ca.gc.triagency.datastore.model.Agency;
@@ -37,6 +38,12 @@ public class DatasetController {
 	@Autowired
 	DatasetService datasetService;
 
+	@ResponseBody
+	@RequestMapping(path = "/all", method = RequestMethod.GET)
+	public List<Dataset> getAllDatasets() {
+		return datasetService.getAllDatasets();
+	}
+	
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String home(Model model) {
 		model.addAttribute("datasets", datasetService.getAllDatasets());
@@ -58,7 +65,6 @@ public class DatasetController {
 		return "datasets/createAwardDatasetValidate";
 	}
 
-	@Async
 	@PostMapping(value = "/createAwardDataset")
 	public String createAwardDatasetPost(@RequestParam long id, @RequestParam String filename) {
 		Dataset form = datasetService.configureNewDatasetFromFilename(filename);
@@ -83,7 +89,6 @@ public class DatasetController {
 		return "datasets/createDatasetValidate";
 	}
 
-	@Async
 	@PostMapping(value = "/createDataset")
 	public String createDatasetPost(@RequestParam String filename) {
 		Dataset form = datasetService.configureNewDatasetFromFilename(filename);

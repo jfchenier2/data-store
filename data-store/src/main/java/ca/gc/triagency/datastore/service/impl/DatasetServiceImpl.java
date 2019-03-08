@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.ebay.xcelite.Xcelite;
@@ -146,6 +147,7 @@ public class DatasetServiceImpl implements DatasetService {
 		return list;
 	}
 
+	//@Async
 	@Override
 	public void uploadAwardData(Dataset dataset) {
 		HashMap<Long, DatasetApplication> datasetAppsHash = new HashMap<Long, DatasetApplication>();
@@ -181,16 +183,20 @@ public class DatasetServiceImpl implements DatasetService {
 				parsedDate = formatter.parse(row.getFundingYear());
 				award.setFundingYear(parsedDate);
 			} catch (ParseException e) {
-				System.out.println("unvalid competition year:" + row.getCompetitionYear());
+				System.out.println("invalid competition year:" + row.getCompetitionYear());
 			}
 			datasetAwardRepo.save(award);
 
+			if(rownum % 9 == 0) {
+				datasetRepo.save(dataset);
+			}
 		}
 		dataset.setTotalRecords(rownum);
 		datasetRepo.save(dataset);
 
 	}
 
+	//@Async
 	@Override
 	public void uploadData(Dataset dataset) {
 		List<Agency> agencies = agencyRepo.findAll();
@@ -249,7 +255,7 @@ public class DatasetServiceImpl implements DatasetService {
 				try {
 					parsedDate = formatter.parse(row.getCompetitionYear());
 				} catch (ParseException e) {
-					System.out.println("unvalid competition year:" + row.getCompetitionYear());
+					System.out.println("invalid competition year:" + row.getCompetitionYear());
 					// TODO Auto-generated catch block
 					// e.printStackTrace();
 				}
@@ -325,6 +331,10 @@ public class DatasetServiceImpl implements DatasetService {
 			appRegistrationRepo.save(appRegistration);
 			System.out.println("created DatasetOrganization: " + appRegistration);
 
+			if(rowNum % 9 == 0) {
+				datasetRepo.save(dataset);
+			}
+			
 			System.out.println("Row #" + rowNum++);
 			dataset.setCurrentRow(rowNum);
 		}
@@ -342,7 +352,7 @@ public class DatasetServiceImpl implements DatasetService {
 		String[] visMinorityOptions = { "South Asian", "Chinese", "Black", "Latin American", "Arab", "Southest Asian",
 				"West Asian", "Korean", "Japanese" };
 
-		String[] disabilityOptions = { "Death", "Blind", "Physical", "Other" };
+		String[] disabilityOptions = { "Deaf", "Blind", "Physical", "Other" };
 
 		Random random = new Random();
 

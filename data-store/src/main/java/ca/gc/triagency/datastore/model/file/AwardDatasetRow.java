@@ -1,8 +1,20 @@
 package ca.gc.triagency.datastore.model.file;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import com.ebay.xcelite.annotations.Column;
 
+@Entity
+@Table(name = "award_dataset")
 public class AwardDatasetRow {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
 
 	@Column(name = "Source")
 	private String source;
@@ -11,10 +23,10 @@ public class AwardDatasetRow {
 	private String applicationIdentifier;
 
 	@Column(name = "Appl_ID")
-	private String applicationId;
+	private long applicationId;
 
 	@Column(name = "Competition_Year")
-	private String competitionYear;
+	private int competitionYear;
 
 	@Column(name = "Program_ID")
 	private String programId;
@@ -29,7 +41,7 @@ public class AwardDatasetRow {
 	private String createDate;
 
 	@Column(name = "Role_Code")
-	private String roleCode;
+	private int roleCode;
 
 	@Column(name = "Role_English")
 	private String roleEn;
@@ -44,22 +56,22 @@ public class AwardDatasetRow {
 	private String givenName;
 
 	@Column(name = "Person_Identifier")
-	private String personIdentifier;
+	private long personIdentifier;
 
-	@Column(name = "Organization_ID")
-	private String orgId;
-
-	@Column(name = "Organization_Name_English")
-	private String orgNameEn;
-
-	@Column(name = "Organization_Name_French")
-	private String orgNameFr;
+//	@Column(name = "Organization_ID")
+//	private String orgId;
+//
+//	@Column(name = "Organization_Name_English")
+//	private String orgNameEn;
+//
+//	@Column(name = "Organization_Name_French")
+//	private String orgNameFr;
 
 	@Column(name = "Awarded_Amount")
-	private String awardedAmmount;
+	private String awardedAmount;
 
 	@Column(name = "Funding_Year")
-	private String fundingYear;
+	private int fundingYear;
 	
 	
 	// @Column(name = "Grant_Awarded_Amount")
@@ -68,6 +80,10 @@ public class AwardDatasetRow {
 	// @Column(name = "Scholarship_Awarded_Amount")
 	// private String scolarshipAwardedAmmount;
 
+	public long getId() {
+		return id;
+	}
+	
 	public String getSource() {
 		return source;
 	}
@@ -84,11 +100,11 @@ public class AwardDatasetRow {
 		this.applicationIdentifier = applicationIdentifier;
 	}
 
-	public String getCompetitionYear() {
+	public int getCompetitionYear() {
 		return competitionYear;
 	}
 
-	public void setCompetitionYear(String competitionYear) {
+	public void setCompetitionYear(int competitionYear) {
 		this.competitionYear = competitionYear;
 	}
 
@@ -116,11 +132,11 @@ public class AwardDatasetRow {
 		this.createDate = createDate;
 	}
 
-	public String getRoleCode() {
+	public int getRoleCode() {
 		return roleCode;
 	}
 
-	public void setRoleCode(String roleCode) {
+	public void setRoleCode(int roleCode) {
 		this.roleCode = roleCode;
 	}
 
@@ -156,58 +172,58 @@ public class AwardDatasetRow {
 		this.givenName = givenName;
 	}
 
-	public String getPersonIdentifier() {
+	public long getPersonIdentifier() {
 		return personIdentifier;
 	}
 
-	public void setPersonIdentifier(String personIdentifier) {
+	public void setPersonIdentifier(long personIdentifier) {
 		this.personIdentifier = personIdentifier;
 	}
 
-	public String getOrgId() {
-		return orgId;
-	}
-
-	public void setOrgId(String orgId) {
-		this.orgId = orgId;
-	}
-
-	public void fixApplicationId() {
-		int dotLocation = applicationId.indexOf(".");
-		if (dotLocation > 0) {
-			applicationId = applicationId.substring(0, dotLocation);
-		}
-	}
-
-	public void fixOrgId() {
-		int dotLocation = orgId.indexOf(".");
-		if (dotLocation > 0) {
-			orgId = orgId.substring(0, dotLocation);
-		}
-	}
-
-	public void fixPersonId() {
-		int dotLocation = personIdentifier.indexOf(".");
-		if (dotLocation > 0) {
-			personIdentifier = personIdentifier.substring(0, dotLocation);
-		}
-	}
-
-	public String getOrgNameEn() {
-		return orgNameEn;
-	}
-
-	public void setOrgNameEn(String orgNameEn) {
-		this.orgNameEn = orgNameEn;
-	}
-
-	public String getOrgNameFr() {
-		return orgNameFr;
-	}
-
-	public void setOrgNameFr(String orgNameFr) {
-		this.orgNameFr = orgNameFr;
-	}
+//	public String getOrgId() {
+//		return orgId;
+//	}
+//
+//	public void setOrgId(String orgId) {
+//		this.orgId = orgId;
+//	}
+//
+//	public void fixApplicationId() {
+//		int dotLocation = applicationId.indexOf(".");
+//		if (dotLocation > 0) {
+//			applicationId = applicationId.substring(0, dotLocation);
+//		}
+//	}
+//
+//	public void fixOrgId() {
+//		int dotLocation = orgId.indexOf(".");
+//		if (dotLocation > 0) {
+//			orgId = orgId.substring(0, dotLocation);
+//		}
+//	}
+//
+//	public void fixPersonId() {
+//		int dotLocation = personIdentifier.indexOf(".");
+//		if (dotLocation > 0) {
+//			personIdentifier = personIdentifier.substring(0, dotLocation);
+//		}
+//	}
+//
+//	public String getOrgNameEn() {
+//		return orgNameEn;
+//	}
+//
+//	public void setOrgNameEn(String orgNameEn) {
+//		this.orgNameEn = orgNameEn;
+//	}
+//
+//	public String getOrgNameFr() {
+//		return orgNameFr;
+//	}
+//
+//	public void setOrgNameFr(String orgNameFr) {
+//		this.orgNameFr = orgNameFr;
+//	}
 
 	public String getProgramId() {
 		return programId;
@@ -217,27 +233,27 @@ public class AwardDatasetRow {
 		this.programId = programId;
 	}
 
-	public String getAwardedAmmount() {
-		return awardedAmmount;
+	public String getAwardedAmount() {
+		return awardedAmount;
 	}
 
-	public void setAwardedAmmount(String awardedAmmount) {
-		this.awardedAmmount = awardedAmmount;
+	public void setAwardedAmount(String awardedAmount) {
+		this.awardedAmount = awardedAmount;
 	}
 
-	public String getApplicationId() {
+	public long getApplicationId() {
 		return applicationId;
 	}
 
-	public void setApplicationId(String applicationId) {
+	public void setApplicationId(long applicationId) {
 		this.applicationId = applicationId;
 	}
 
-	public String getFundingYear() {
+	public int getFundingYear() {
 		return fundingYear;
 	}
 
-	public void setFundingYear(String fundingYear) {
+	public void setFundingYear(int fundingYear) {
 		this.fundingYear = fundingYear;
 	}
 

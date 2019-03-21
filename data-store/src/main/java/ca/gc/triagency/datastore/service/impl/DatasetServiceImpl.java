@@ -1,8 +1,10 @@
 package ca.gc.triagency.datastore.service.impl;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,8 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import javax.sql.DataSource;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Async;
@@ -25,6 +30,9 @@ import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
+import ca.gc.triagency.datastore.jdbc.dao.DatasetDAO;
+import ca.gc.triagency.datastore.jdbc.template.AwardDatasetJDBCTemplate;
+import ca.gc.triagency.datastore.jdbc.template.DatasetJDBCTemplate;
 import ca.gc.triagency.datastore.model.Agency;
 import ca.gc.triagency.datastore.model.Dataset;
 import ca.gc.triagency.datastore.model.Dataset.DatasetStatus;
@@ -109,6 +117,13 @@ public class DatasetServiceImpl implements DatasetService {
 
 	@Autowired
 	ParticipationEdiDataRepository ediRepo;
+	
+	@Autowired
+	DataSource dataSource;
+	
+	private DatasetJDBCTemplate jdbcTemplateObject = new DatasetJDBCTemplate();
+	
+	private AwardDatasetJDBCTemplate awardJDBCTemplateObject = new AwardDatasetJDBCTemplate();
 
 	@Override
 	public List<Dataset> getAllDatasets() {
@@ -150,6 +165,69 @@ public class DatasetServiceImpl implements DatasetService {
 	//@Async
 	@Override
 	public void uploadAwardData(Dataset dataset) {
+//		HashMap<Long, DatasetApplication> datasetAppsHash = new HashMap<Long, DatasetApplication>();
+//		Long parentDatasetId = dataset.getParentDataset().getId();
+//		List<DatasetApplication> relevantApps = datasetApplicationRepo.findByDatasetId(parentDatasetId);
+//		for (DatasetApplication app : relevantApps) {
+//			datasetAppsHash.put(app.getExtId(), app);
+//		}
+//
+//		HashMap<String, DatasetPerson> datasetPersonHash = new HashMap<String, DatasetPerson>();
+//		List<DatasetPerson> relevantPersons = datasetPersonRepo.findAll(); // fixme
+//		for (DatasetPerson p : relevantPersons) {
+//			datasetPersonHash.put(p.getExtId(), p);
+//		}
+		dataset.setDatasetStatus(DatasetStatus.UPLOADING);
+		datasetRepo.save(dataset);
+		List<AwardDatasetRow> awards = new ArrayList<>();
+		awardJDBCTemplateObject.setDataSource(dataSource);
+		long rownum = 0;
+		for (AwardDatasetRow row : loadAwardObjectList(dataset.getFilename())) {
+//			DatasetAward award = new DatasetAward();
+//			row.fixApplicationId();
+//			row.fixPersonId();
+//			if (row.getAwardedAmmount() == null || row.getAwardedAmmount().contains("NULL")) {
+//				continue;
+//			}
+//			rownum++;
+//			award.setAmount(Float.parseFloat(row.getAwardedAmmount()));
+//			award.setDatasetApplication(datasetAppsHash.get(Long.parseLong(row.getApplicationId())));
+//			award.setDatasetPerson(datasetPersonHash.get(Long.parseLong(row.getPersonIdentifier())));
+//			SimpleDateFormat formatter = new SimpleDateFormat("yyyy");
+//			Date parsedDate = null;
+//			try {
+//				parsedDate = formatter.parse(row.getCompetitionYear());
+//				award.setProgramYear(parsedDate);
+//				parsedDate = formatter.parse(row.getFundingYear());
+//				award.setFundingYear(parsedDate);
+//			} catch (ParseException e) {
+//				System.out.println("invalid competition year:" + row.getCompetitionYear());
+//			}
+//			datasetAwardRepo.save(award);
+
+			awards.add(row);
+			
+			if(rownum % 25 == 0) {
+				datasetRepo.save(dataset);
+			}
+			rownum++;
+			System.out.println("Row #" + rownum + " | ApplId: " + row.getApplicationId());
+			
+			dataset.setCurrentRow(rownum);
+		}
+		dataset.setTotalRecords(rownum);
+		datasetRepo.save(dataset);
+		awardJDBCTemplateObject.insertMasterBatch(awards);
+		dataset.setDatasetStatus(DatasetStatus.UPLOAD_COMPLETE);
+		datasetRepo.save(dataset);
+		normalizeAwardData(dataset, awards);
+		dataset.setDatasetStatus(DatasetStatus.NORMALIZED);
+		datasetRepo.save(dataset);
+	}
+	
+	private void normalizeAwardData(Dataset dataset, List<AwardDatasetRow> awards) {
+		dataset.setDatasetStatus(DatasetStatus.NORMALIZING);
+		datasetRepo.save(dataset);
 		HashMap<Long, DatasetApplication> datasetAppsHash = new HashMap<Long, DatasetApplication>();
 		Long parentDatasetId = dataset.getParentDataset().getId();
 		List<DatasetApplication> relevantApps = datasetApplicationRepo.findByDatasetId(parentDatasetId);
@@ -162,43 +240,195 @@ public class DatasetServiceImpl implements DatasetService {
 		for (DatasetPerson p : relevantPersons) {
 			datasetPersonHash.put(p.getExtId(), p);
 		}
-
+		
 		long rownum = 0;
-		for (AwardDatasetRow row : loadAwardObjectList(dataset.getFilename())) {
+		for (AwardDatasetRow row : awards){
 			DatasetAward award = new DatasetAward();
-			row.fixApplicationId();
-			row.fixPersonId();
-			if (row.getAwardedAmmount() == null || row.getAwardedAmmount().contains("NULL")) {
+//			row.fixApplicationId();
+//			row.fixPersonId();
+			if (row.getAwardedAmount() == null || row.getAwardedAmount().contains("NULL")) {
 				continue;
 			}
 			rownum++;
-			award.setAmount(Float.parseFloat(row.getAwardedAmmount()));
-			award.setDatasetApplication(datasetAppsHash.get(Long.parseLong(row.getApplicationId())));
-			award.setDatasetPerson(datasetPersonHash.get(Long.parseLong(row.getPersonIdentifier())));
+			award.setAmount(Float.parseFloat(row.getAwardedAmount()));
+			award.setDatasetApplication(datasetAppsHash.get(row.getApplicationId()));
+			award.setDatasetPerson(datasetPersonHash.get(row.getPersonIdentifier()));
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy");
-			Date parsedDate = null;
+			String compDate = Integer.toString(row.getCompetitionYear()) + "-0-0";
+			String fundingDate = Integer.toString(row.getFundingYear()) + "-0-0";
 			try {
-				parsedDate = formatter.parse(row.getCompetitionYear());
-				award.setProgramYear(parsedDate);
-				parsedDate = formatter.parse(row.getFundingYear());
-				award.setFundingYear(parsedDate);
+				award.setProgramYear(formatter.parse(compDate));
+				award.setFundingYear(formatter.parse(fundingDate));
 			} catch (ParseException e) {
 				System.out.println("invalid competition year:" + row.getCompetitionYear());
-			}
+				dataset.setDatasetStatus(DatasetStatus.NORMALIZING_ERROR);
+			} 
 			datasetAwardRepo.save(award);
-
-			if(rownum % 9 == 0) {
-				datasetRepo.save(dataset);
-			}
+			System.out.println("Normalized row: " + rownum);
 		}
-		dataset.setTotalRecords(rownum);
-		datasetRepo.save(dataset);
-
 	}
 
 	//@Async
 	@Override
 	public void uploadData(Dataset dataset) {
+//		List<Agency> agencies = agencyRepo.findAll();
+//		Agency SSHRC = null, NSERC = null;
+//		for (Agency agency : agencies) {
+//			if (agency.getAcronymEn().compareTo("NSERC") == 0) {
+//				NSERC = agency;
+//			} else if (agency.getAcronymEn().compareTo("SSHRC") == 0) {
+//				SSHRC = agency;
+//			}
+//		}
+//		HashMap<String, DatasetProgram> programHash = new HashMap<String, DatasetProgram>();
+//		HashMap<String, DatasetAppRegistrationRole> roleHash = new HashMap<String, DatasetAppRegistrationRole>();
+//		HashMap<String, DatasetOrganization> orgHash = new HashMap<String, DatasetOrganization>();
+//		HashMap<String, DatasetPerson> personHash = new HashMap<String, DatasetPerson>();
+//
+//		// fill repos with relevant config lookups
+//
+//		String currentAppId = "";
+		int rowNum = 0;
+//		DatasetApplication currentApplication = null;
+//		DatasetProgram currentProgram = null;
+//		DatasetAppRegistrationRole currentAppRole = null;
+//		DatasetPerson currentPerson = null;
+//		DatasetOrganization currentOrg = null;
+		List<ApplyDatasetRow> applications = new ArrayList<>();
+		jdbcTemplateObject.setDataSource(dataSource);
+		dataset.setDatasetStatus(DatasetStatus.UPLOADING);
+		for (ApplyDatasetRow row : loadObjectList(dataset.getFilename())) {
+//			if (currentAppId.compareTo(row.getApplicationIdentifier()) != 0) {
+//				if (currentApplication != null) {
+//					currentApplication = datasetApplicationRepo.save(currentApplication);
+//					System.out.println("created DatasetApplication: " + currentApplication);
+//				}
+//				currentApplication = new DatasetApplication();
+//				currentApplication.setDataset(dataset);
+//
+//				currentAppId = row.getApplicationIdentifier();
+//				currentProgram = programHash.get(row.getProgramId());
+//				if (currentProgram == null) {
+//					currentProgram = new DatasetProgram();
+//					currentProgram.setExtId(row.getProgramId());
+//					currentProgram.setNameEn(row.getProgramEn());
+//					currentProgram.setNameFr(row.getProgramFr());
+//					if (row.getSource().compareTo("NAMIS") == 0) {
+//						currentProgram.setLeadAgency(NSERC);
+//					} else {
+//						currentProgram.setLeadAgency(SSHRC);
+//					}
+//					currentProgram.setDataset(dataset);
+//					currentProgram = datasetProgramRepo.save(currentProgram);
+//					programHash.put(currentProgram.getExtId(), currentProgram);
+//					System.out.println("created DatasetProgram: " + currentProgram);
+//				}
+//				currentApplication.setDatasetProgram(currentProgram);
+//
+//				SimpleDateFormat formatter = new SimpleDateFormat("yyyy");
+//				Date parsedDate = null;
+//				try {
+//					parsedDate = formatter.parse(row.getCompetitionYear());
+//				} catch (ParseException e) {
+//					System.out.println("invalid competition year:" + row.getCompetitionYear());
+//					// TODO Auto-generated catch block
+//					// e.printStackTrace();
+//				}
+//				currentApplication.setProgramYear(parsedDate);
+//
+//				formatter = new SimpleDateFormat("yyyy/mm/dd hh:mm:ss aa");
+//				parsedDate = null;
+//				try {
+//					if (row.getCreateDate() != null) {
+//						parsedDate = formatter.parse(row.getCreateDate());
+//					}
+//				} catch (ParseException e) {
+//					System.out.println("invalid create date:" + row.getCreateDate());
+//					// TODO Auto-generated catch block
+//					// e.printStackTrace();
+//				}
+//				currentApplication.setCreateDateTime(parsedDate);
+//				currentApplication.setExtIdentifier(row.getApplicationIdentifier());
+//				row.fixApplId();
+//				if(row.getApplId().contains("-")) {
+//					row.setApplId(row.getApplId().replace('-', '0'));
+//				}
+//				currentApplication.setExtId(Long.parseLong(row.getApplId()));
+//				currentApplication = datasetApplicationRepo.save(currentApplication);
+//
+//			}
+//
+//			currentAppRole = roleHash.get(row.getRoleCode());
+//			if (currentAppRole == null) {
+//				currentAppRole = new DatasetAppRegistrationRole();
+//				currentAppRole.setIdentifier(row.getRoleCode());
+//				currentAppRole.setNameEn(row.getRoleEn());
+//				currentAppRole.setNameFr(row.getRoleFr());
+//				currentAppRole = appRoleRepo.save(currentAppRole);
+//				roleHash.put(currentAppRole.getIdentifier(), currentAppRole);
+//				System.out.println("created DatasetAppRegistrationRole: " + currentAppRole);
+//			}
+//			row.fixOrgId();
+//			//Long rowOrgId = new Long(row.getOrgId());
+//			currentOrg = orgHash.get(row.getOrgId());
+//			if (currentOrg == null) {
+//				currentOrg = new DatasetOrganization();
+//				currentOrg.setExtId(row.getOrgId());
+//				currentOrg.setNameEn(row.getOrgNameEn());
+//				currentOrg.setNameFr(row.getOrgNameFr());
+//				currentOrg.setDataset(dataset);
+//				currentOrg.setPostalZipCode(row.getPostalZipCode());
+//				currentOrg.setCity(row.getCity());
+//				currentOrg.setStateProvCode(row.getStateProvCode());
+//				currentOrg = datasetOrgRepo.save(currentOrg);
+//				orgHash.put(currentOrg.getExtId(), currentOrg);
+//				System.out.println("created DatasetOrganization: " + currentOrg);
+//			}
+//			row.fixPersonIdentifier();
+//			currentPerson = personHash.get(row.getPersonIdentifier());
+//			if (currentPerson == null) {
+//				currentPerson = new DatasetPerson();
+//				currentPerson.setExtId(row.getPersonIdentifier());
+//				currentPerson.setFamilyName(row.getFamilyName());
+//				currentPerson.setGivenName(row.getGivenName());
+//				currentPerson = datasetPersonRepo.save(currentPerson);
+//				personHash.put("" + currentPerson.getExtId(), currentPerson);
+//				System.out.println("created DatasetPerson: " + currentPerson);
+//			}
+//			ParticipationEdiData ediData = generateRandomEdi();
+//			ediData = ediRepo.save(ediData);
+//			DatasetApplicationRegistration appRegistration = new DatasetApplicationRegistration();
+//			appRegistration.setParticipationEdiData(ediData);
+//			appRegistration.setDatasetOrganization(currentOrg);
+//			appRegistration.setPerson(currentPerson);
+//			appRegistration.setRegistrationRole(currentAppRole);
+//			appRegistration.setDatasetApplication(currentApplication);
+//			appRegistrationRepo.save(appRegistration);
+//			System.out.println("created DatasetOrganization: " + appRegistration);
+			
+			applications.add(row);
+			
+			if(rowNum % 25 == 0) {
+				datasetRepo.save(dataset);
+			}
+			rowNum++;
+			System.out.println("Row #" + rowNum + " | ApplId: " + row.getApplId());
+			
+			dataset.setCurrentRow(rowNum);
+		}
+		dataset.setTotalRecords(rowNum);
+		datasetRepo.save(dataset);
+		jdbcTemplateObject.insertMasterBatch(applications);
+		dataset.setDatasetStatus(DatasetStatus.UPLOAD_COMPLETE);
+		datasetRepo.save(dataset);
+		normalizeData(dataset, applications);
+		dataset.setDatasetStatus(DatasetStatus.NORMALIZED);
+		datasetRepo.save(dataset);
+	}
+	
+	private void normalizeData(Dataset dataset, List<ApplyDatasetRow> applications) {
+		dataset.setDatasetStatus(DatasetStatus.NORMALIZING);
+		datasetRepo.save(dataset);
 		List<Agency> agencies = agencyRepo.findAll();
 		Agency SSHRC = null, NSERC = null;
 		for (Agency agency : agencies) {
@@ -222,7 +452,9 @@ public class DatasetServiceImpl implements DatasetService {
 		DatasetAppRegistrationRole currentAppRole = null;
 		DatasetPerson currentPerson = null;
 		DatasetOrganization currentOrg = null;
-		for (ApplyDatasetRow row : loadObjectList(dataset.getFilename())) {
+//		List<ApplyDatasetRow> applications = new ArrayList<>();
+//		jdbcTemplateObject.setDataSource(dataSource);
+		for (ApplyDatasetRow row : applications) {
 			if (currentAppId.compareTo(row.getApplicationIdentifier()) != 0) {
 				if (currentApplication != null) {
 					currentApplication = datasetApplicationRepo.save(currentApplication);
@@ -251,54 +483,52 @@ public class DatasetServiceImpl implements DatasetService {
 				currentApplication.setDatasetProgram(currentProgram);
 
 				SimpleDateFormat formatter = new SimpleDateFormat("yyyy");
-				Date parsedDate = null;
+				String compYear = Integer.toString(row.getCompetitionYear()) + "-0-0";
 				try {
-					parsedDate = formatter.parse(row.getCompetitionYear());
+					currentApplication.setProgramYear(formatter.parse(compYear));
 				} catch (ParseException e) {
 					System.out.println("invalid competition year:" + row.getCompetitionYear());
+					dataset.setDatasetStatus(DatasetStatus.NORMALIZING_ERROR);
 					// TODO Auto-generated catch block
 					// e.printStackTrace();
 				}
-				currentApplication.setProgramYear(parsedDate);
 
 				formatter = new SimpleDateFormat("yyyy/mm/dd hh:mm:ss aa");
-				parsedDate = null;
 				try {
 					if (row.getCreateDate() != null) {
-						parsedDate = formatter.parse(row.getCreateDate());
+						currentApplication.setCreateDateTime(formatter.parse(row.getCreateDate()));
 					}
 				} catch (ParseException e) {
 					System.out.println("invalid create date:" + row.getCreateDate());
+					dataset.setDatasetStatus(DatasetStatus.NORMALIZING_ERROR);
 					// TODO Auto-generated catch block
 					// e.printStackTrace();
 				}
-				currentApplication.setCreateDateTime(parsedDate);
 				currentApplication.setExtIdentifier(row.getApplicationIdentifier());
-				row.fixApplId();
-				if(row.getApplId().contains("-")) {
-					row.setApplId(row.getApplId().replace('-', '0'));
-				}
-				currentApplication.setExtId(Long.parseLong(row.getApplId()));
+				//row.fixApplId();
+				//if(row.getApplId().contains("-")) {
+				//	row.setApplId(row.getApplId().replace('-', '0'));
+				//}
+				currentApplication.setExtId(row.getApplId());
 				currentApplication = datasetApplicationRepo.save(currentApplication);
-
 			}
 
 			currentAppRole = roleHash.get(row.getRoleCode());
 			if (currentAppRole == null) {
 				currentAppRole = new DatasetAppRegistrationRole();
-				currentAppRole.setIdentifier(row.getRoleCode());
+				currentAppRole.setIdentifier(Integer.toString(row.getRoleCode()));
 				currentAppRole.setNameEn(row.getRoleEn());
 				currentAppRole.setNameFr(row.getRoleFr());
 				currentAppRole = appRoleRepo.save(currentAppRole);
 				roleHash.put(currentAppRole.getIdentifier(), currentAppRole);
 				System.out.println("created DatasetAppRegistrationRole: " + currentAppRole);
 			}
-			row.fixOrgId();
+			//row.fixOrgId();
 			//Long rowOrgId = new Long(row.getOrgId());
 			currentOrg = orgHash.get(row.getOrgId());
 			if (currentOrg == null) {
 				currentOrg = new DatasetOrganization();
-				currentOrg.setExtId(row.getOrgId());
+				currentOrg.setExtId(Long.toString(row.getOrgId()));
 				currentOrg.setNameEn(row.getOrgNameEn());
 				currentOrg.setNameFr(row.getOrgNameFr());
 				currentOrg.setDataset(dataset);
@@ -309,11 +539,11 @@ public class DatasetServiceImpl implements DatasetService {
 				orgHash.put(currentOrg.getExtId(), currentOrg);
 				System.out.println("created DatasetOrganization: " + currentOrg);
 			}
-			row.fixPersonIdentifier();
+			//row.fixPersonIdentifier();
 			currentPerson = personHash.get(row.getPersonIdentifier());
 			if (currentPerson == null) {
 				currentPerson = new DatasetPerson();
-				currentPerson.setExtId(row.getPersonIdentifier());
+				currentPerson.setExtId(Long.toString(row.getPersonIdentifier()));
 				currentPerson.setFamilyName(row.getFamilyName());
 				currentPerson.setGivenName(row.getGivenName());
 				currentPerson = datasetPersonRepo.save(currentPerson);
@@ -330,19 +560,9 @@ public class DatasetServiceImpl implements DatasetService {
 			appRegistration.setDatasetApplication(currentApplication);
 			appRegistrationRepo.save(appRegistration);
 			System.out.println("created DatasetOrganization: " + appRegistration);
-
-			if(rowNum % 9 == 0) {
-				datasetRepo.save(dataset);
-			}
-			
-			System.out.println("Row #" + rowNum++);
-			dataset.setCurrentRow(rowNum);
 		}
-		dataset.setTotalRecords(rowNum);
-		datasetRepo.save(dataset);
-
 	}
-
+	
 	private ParticipationEdiData generateRandomEdi() {
 		ParticipationEdiData retval = new ParticipationEdiData();
 		String[] genderOptions = { "Man", "Woman", "Other" };
@@ -434,7 +654,6 @@ public class DatasetServiceImpl implements DatasetService {
 		SheetReader<ApplyDatasetRow> reader = sheet.getBeanReader(ApplyDatasetRow.class);
 		rows = reader.read();
 
-		// return rows;
 		return rows;
 
 	}
@@ -451,7 +670,6 @@ public class DatasetServiceImpl implements DatasetService {
 		SheetReader<AwardDatasetRow> reader = sheet.getBeanReader(AwardDatasetRow.class);
 		rows = reader.read();
 
-		// return rows;
 		return rows;
 
 	}
@@ -545,7 +763,7 @@ public class DatasetServiceImpl implements DatasetService {
 	@Override
 	public Dataset markAssessIfFirstTimeView(Dataset ds) {
 		Dataset retval = ds;
-		if (ds.getDatasetStatus() == DatasetStatus.CREATED) {
+		if (ds.getDatasetStatus() == DatasetStatus.NORMALIZED) {
 			ds.setDatasetStatus(DatasetStatus.ASSESS);
 			retval = datasetRepo.save(ds);
 		}

@@ -21,15 +21,15 @@ $(document).ready( function () {
 	 
 	 var intervalID = setInterval( function () {
 		 
-		 var totalContainsZero = table.column(3).data().toArray().includes(0);
-		 
-		 if(!totalContainsZero){
-			 clearInterval(intervalID);
-			 //alert('Interval Cleared');
-		 }else{
+//		 var totalContainsZero = table.column(3).data().toArray().includes(0);
+//		 var isNormalizing = table.column(2).data().toArray().includes("NORMALIZING")
+//		 if(!totalContainsZero && !isNormalizing){
+//			 clearInterval(intervalID);
+//			 alert('Interval Cleared');
+//		 }else{
 			 table.ajax.reload(null, false);
-		 }
+//		 }
 		
-	 }, 300); 
+	 }, 500); 
 	 
 });

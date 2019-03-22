@@ -22,4 +22,6 @@ public interface DatasetDAO{
 	public void insertAwardBatch(List<AwardDatasetRow> awards);
 	
 	public void deleteDatasetById(Long id);
+	
+	public List<Dataset> getDatasetsToDelete();
 }

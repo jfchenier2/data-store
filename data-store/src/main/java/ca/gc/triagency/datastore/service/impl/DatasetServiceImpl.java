@@ -873,7 +873,12 @@ public class DatasetServiceImpl implements DatasetService {
 	
 	@Override
 	public void deleteMarkedDatasets() {
+		List<Dataset> toDelete = jdbcTemplateObject.getDatasetsToDelete();
 		
+		for(Dataset dataset : toDelete) {
+			Long id = dataset.getId();
+			jdbcTemplateObject.deleteDatasetById(id);
+		}
 	}
 	
 }

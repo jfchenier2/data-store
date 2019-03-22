@@ -3,11 +3,13 @@ package ca.gc.triagency.datastore.jdbc.template;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLType;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -142,6 +144,19 @@ public class DatasetJDBCTemplate implements DatasetDAO {
 		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(dataSource).withProcedureName("delete_dataset_by_id");
 		SqlParameterSource in = new MapSqlParameterSource().addValue("in_id", id);
 		jdbcCall.execute(in);
+	}
+	
+	@Override
+	public List<Dataset> getDatasetsToDelete(){
+		String sql = "SELECT * FROM data_store.dataset WHERE dataset_status = \"TO_DELETE\"";
+		List<Dataset> toDelete = null;
+		try {
+			toDelete = jdbcTemplateObject.queryForList(sql, Dataset.class);
+		}catch (DataAccessException e) {
+			System.out.println("Couldn't delete datasets. Error accessing data.");
+		}
+		
+		return toDelete;
 	}
 	
 }

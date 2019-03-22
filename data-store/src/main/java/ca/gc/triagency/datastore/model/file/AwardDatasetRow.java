@@ -24,6 +24,8 @@ public class AwardDatasetRow {
 
 	@Column(name = "Appl_ID")
 	private long applicationId;
+	
+	private long datasetId;
 
 	@Column(name = "Competition_Year")
 	private int competitionYear;
@@ -255,6 +257,14 @@ public class AwardDatasetRow {
 
 	public void setFundingYear(int fundingYear) {
 		this.fundingYear = fundingYear;
+	}
+
+	public long getDatasetId() {
+		return datasetId;
+	}
+
+	public void setDatasetId(long datasetId) {
+		this.datasetId = datasetId;
 	}
 
 	// public String getGrantAwardedAmmount() {

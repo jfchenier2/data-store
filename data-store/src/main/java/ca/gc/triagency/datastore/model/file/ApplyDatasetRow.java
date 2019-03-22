@@ -24,6 +24,8 @@ public class ApplyDatasetRow {
 
 	@Column(name = "Appl_ID")
 	private long applId;
+	
+	private long datasetId;
 
 	@Column(name = "Competition_Year")
 	private int competitionYear;
@@ -312,4 +314,12 @@ public class ApplyDatasetRow {
 		this.country = country;
 	}
 	//***************************
+
+	public long getDatasetId() {
+		return datasetId;
+	}
+
+	public void setDatasetId(long datasetId) {
+		this.datasetId = datasetId;
+	}
 }

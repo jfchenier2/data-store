@@ -1,4 +1,4 @@
-package ca.gc.triagency.datastore.jdbc.dao;
+package ca.gc.triagency.datastore.jdbc;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -6,9 +6,10 @@ import javax.sql.DataSource;
 
 import ca.gc.triagency.datastore.model.Dataset;
 import ca.gc.triagency.datastore.model.file.ApplyDatasetRow;
+import ca.gc.triagency.datastore.model.file.AwardDatasetRow;
 
 
-public interface DatasetDAO<T>{
+public interface DatasetDAO{
 	
 	public void setDataSource(DataSource dataSource);
 	
@@ -16,5 +17,9 @@ public interface DatasetDAO<T>{
 //	
 //	public Dataset findDatasetById(long id);
 	
-	public void insertMasterBatch(List<T> applications);
+	public void insertMasterBatch(List<ApplyDatasetRow> applications);
+	
+	public void insertAwardBatch(List<AwardDatasetRow> awards);
+	
+	public void deleteDatasetById(Long id);
 }

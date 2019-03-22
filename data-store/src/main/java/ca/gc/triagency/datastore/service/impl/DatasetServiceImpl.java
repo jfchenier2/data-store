@@ -30,8 +30,7 @@ import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
-import ca.gc.triagency.datastore.jdbc.dao.DatasetDAO;
-import ca.gc.triagency.datastore.jdbc.template.AwardDatasetJDBCTemplate;
+import ca.gc.triagency.datastore.jdbc.DatasetDAO;
 import ca.gc.triagency.datastore.jdbc.template.DatasetJDBCTemplate;
 import ca.gc.triagency.datastore.model.Agency;
 import ca.gc.triagency.datastore.model.Dataset;
@@ -121,9 +120,7 @@ public class DatasetServiceImpl implements DatasetService {
 	@Autowired
 	DataSource dataSource;
 	
-	private DatasetJDBCTemplate jdbcTemplateObject = new DatasetJDBCTemplate();
-	
-	private AwardDatasetJDBCTemplate awardJDBCTemplateObject = new AwardDatasetJDBCTemplate();
+	DatasetDAO jdbcTemplateObject = new DatasetJDBCTemplate();
 
 	@Override
 	public List<Dataset> getAllDatasets() {
@@ -180,7 +177,7 @@ public class DatasetServiceImpl implements DatasetService {
 		dataset.setDatasetStatus(DatasetStatus.UPLOADING);
 		datasetRepo.save(dataset);
 		List<AwardDatasetRow> awards = new ArrayList<>();
-		awardJDBCTemplateObject.setDataSource(dataSource);
+		jdbcTemplateObject.setDataSource(dataSource);
 		long rownum = 0;
 		for (AwardDatasetRow row : loadAwardObjectList(dataset.getFilename())) {
 //			DatasetAward award = new DatasetAward();
@@ -204,7 +201,7 @@ public class DatasetServiceImpl implements DatasetService {
 //				System.out.println("invalid competition year:" + row.getCompetitionYear());
 //			}
 //			datasetAwardRepo.save(award);
-
+			row.setDatasetId(dataset.getId());
 			awards.add(row);
 			
 			if(rownum % 25 == 0) {
@@ -217,7 +214,7 @@ public class DatasetServiceImpl implements DatasetService {
 		}
 		dataset.setTotalRecords(rownum);
 		datasetRepo.save(dataset);
-		awardJDBCTemplateObject.insertMasterBatch(awards);
+		jdbcTemplateObject.insertAwardBatch(awards);
 		dataset.setDatasetStatus(DatasetStatus.UPLOAD_COMPLETE);
 		datasetRepo.save(dataset);
 		normalizeAwardData(dataset, awards);
@@ -405,7 +402,7 @@ public class DatasetServiceImpl implements DatasetService {
 //			appRegistration.setDatasetApplication(currentApplication);
 //			appRegistrationRepo.save(appRegistration);
 //			System.out.println("created DatasetOrganization: " + appRegistration);
-			
+			row.setDatasetId(dataset.getId());
 			applications.add(row);
 			
 			if(rowNum % 25 == 0) {
@@ -868,4 +865,15 @@ public class DatasetServiceImpl implements DatasetService {
 		return entityLinkOrgRepo.findByDatasetConfigurationId(id);
 	}
 
+	@Override
+	public void deleteDataset(Dataset dataset) {
+		Long id = dataset.getId();
+		jdbcTemplateObject.deleteDatasetById(id);
+	}
+	
+	@Override
+	public void deleteMarkedDatasets() {
+		
+	}
+	
 }

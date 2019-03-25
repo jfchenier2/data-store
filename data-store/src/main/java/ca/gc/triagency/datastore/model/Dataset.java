@@ -56,7 +56,7 @@ public class Dataset {
 
 	public enum DatasetStatus {
 		/** Some other format. */
-		CREATED, UPLOADING, UPLOAD_COMPLETE, ASSESS, APPROVED, TO_DELETE, ERROR
+		CREATED, UPLOADING, UPLOADING_ERROR, UPLOAD_COMPLETE, NORMALIZING, NORMALIZING_ERROR, NORMALIZED, ASSESS, APPROVED, TO_DELETE, ERROR
 	}
 
 	@Column(name = "dataset_type")
@@ -111,7 +111,7 @@ public class Dataset {
 	public Long getId() {
 		return id;
 	}
-
+	
 	public DatasetConfiguration getDatasetConfiguration() {
 		return datasetConfiguration;
 	}

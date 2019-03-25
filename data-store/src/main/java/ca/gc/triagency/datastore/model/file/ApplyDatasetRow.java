@@ -1,9 +1,21 @@
 package ca.gc.triagency.datastore.model.file;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import com.ebay.xcelite.annotations.Column;
 
+@Entity
+@Table(name = "master_dataset")
 public class ApplyDatasetRow {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
+	
 	@Column(name = "Source")
 	private String source;
 
@@ -11,10 +23,12 @@ public class ApplyDatasetRow {
 	private String applicationIdentifier;
 
 	@Column(name = "Appl_ID")
-	private String applId;
+	private long applId;
+	
+	private long datasetId;
 
 	@Column(name = "Competition_Year")
-	private String competitionYear;
+	private int competitionYear;
 
 	@Column(name = "Program_ID")
 	private String programId;
@@ -29,7 +43,7 @@ public class ApplyDatasetRow {
 	private String createDate;
 
 	@Column(name = "Role_Code")
-	private String roleCode;
+	private int roleCode;
 
 	@Column(name = "Role_English")
 	private String roleEn;
@@ -44,26 +58,46 @@ public class ApplyDatasetRow {
 	private String givenName;
 
 	@Column(name = "Person_Identifier")
-	private String personIdentifier;
+	private long personIdentifier;
 
 	@Column(name = "Organization_ID")
-	private String orgId;
+	private long orgId;
 
 	@Column(name = "Organization_Name_English")
 	private String orgNameEn;
-
+	
 	@Column(name = "Organization_Name_French")
 	private String orgNameFr;
+	//***************************
+	@Column(name = "Address_1")
+	private String addrOne;
 
+	@Column(name = "Address_2")
+	private String addrTwo;
+	
+	@Column(name = "Address_3")
+	private String addrThree;
+	
+	@Column(name = "Address_4")
+	private String addrFour;
+	//***************************
 	@Column(name = "Municipality")
 	private String city;
 
 	@Column(name = "Postal_Zip_Code")
 	private String postalZipCode;
 
-	@Column(name = "Province_State_Code ")
+	@Column(name = "Province_State_Code")
 	private String stateProvCode;
-
+	//***************************
+	@Column(name = "Country")
+	private String country;
+	//***************************
+	
+	public long getId() {
+		return id;
+	}
+	
 	public String getSource() {
 		return source;
 	}
@@ -80,19 +114,19 @@ public class ApplyDatasetRow {
 		this.applicationIdentifier = applicationIdentifier;
 	}
 
-	public String getApplId() {
+	public long getApplId() {
 		return applId;
 	}
 
-	public void setApplId(String applId) {
+	public void setApplId(long applId) {
 		this.applId = applId;
 	}
 
-	public String getCompetitionYear() {
+	public int getCompetitionYear() {
 		return competitionYear;
 	}
 
-	public void setCompetitionYear(String competitionYear) {
+	public void setCompetitionYear(int competitionYear) {
 		this.competitionYear = competitionYear;
 	}
 
@@ -120,11 +154,11 @@ public class ApplyDatasetRow {
 		this.createDate = createDate;
 	}
 
-	public String getRoleCode() {
+	public int getRoleCode() {
 		return roleCode;
 	}
 
-	public void setRoleCode(String roleCode) {
+	public void setRoleCode(int roleCode) {
 		this.roleCode = roleCode;
 	}
 
@@ -160,40 +194,40 @@ public class ApplyDatasetRow {
 		this.givenName = givenName;
 	}
 
-	public void fixPersonIdentifier() {
-		int dotLocation = personIdentifier.indexOf(".");
-		if (dotLocation > 0) {
-			personIdentifier = personIdentifier.substring(0, dotLocation);
-		}
-	}
-	public String getPersonIdentifier() {
+//	public void fixPersonIdentifier() {
+//		int dotLocation = personIdentifier.indexOf(".");
+//		if (dotLocation > 0) {
+//			personIdentifier = personIdentifier.substring(0, dotLocation);
+//		}
+//	}
+	public long getPersonIdentifier() {
 		return personIdentifier;
 	}
 
-	public void setPersonIdentifier(String personIdentifier) {
+	public void setPersonIdentifier(long personIdentifier) {
 		this.personIdentifier = personIdentifier;
 	}
 
-	public String getOrgId() {
+	public long getOrgId() {
 		return orgId;
 	}
 
-	public void setOrgId(String orgId) {
+	public void setOrgId(long orgId) {
 		this.orgId = orgId;
 	}
 
-	public void fixOrgId() {
-		int dotLocation = orgId.indexOf(".");
-		if (dotLocation > 0) {
-			orgId = orgId.substring(0, dotLocation);
-		}
-	}
-	public void fixApplId() {
-		int dotLocation = applId.indexOf(".");
-		if (dotLocation > 0) {
-			applId = applId.substring(0, dotLocation);
-		}
-	}
+//	public void fixOrgId() {
+//		int dotLocation = orgId.indexOf(".");
+//		if (dotLocation > 0) {
+//			orgId = orgId.substring(0, dotLocation);
+//		}
+//	}
+//	public void fixApplId() {
+//		int dotLocation = applId.indexOf(".");
+//		if (dotLocation > 0) {
+//			applId = applId.substring(0, dotLocation);
+//		}
+//	}
 
 	public String getOrgNameEn() {
 		return orgNameEn;
@@ -210,7 +244,36 @@ public class ApplyDatasetRow {
 	public void setOrgNameFr(String orgNameFr) {
 		this.orgNameFr = orgNameFr;
 	}
+	//***************************
+	public String getAddrOne() {
+		return addrOne;
+	}
 
+	public void setAddrOne(String addrOne) {
+		this.addrOne = addrOne;
+	}
+	public String getAddrTwo() {
+		return addrTwo;
+	}
+
+	public void setAddrTwo(String addrTwo) {
+		this.addrTwo = addrTwo;
+	}
+	public String getAddrThree() {
+		return addrThree;
+	}
+
+	public void setAddrThree(String addrThree) {
+		this.addrThree = addrThree;
+	}
+	public String getAddrFour() {
+		return addrFour;
+	}
+
+	public void setAddrFour(String addrFour) {
+		this.addrFour = addrFour;
+	}
+	//***************************
 	public String getProgramId() {
 		return programId;
 	}
@@ -241,5 +304,22 @@ public class ApplyDatasetRow {
 
 	public void setStateProvCode(String stateProvCode) {
 		this.stateProvCode = stateProvCode;
+	}
+	//***************************
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+	//***************************
+
+	public long getDatasetId() {
+		return datasetId;
+	}
+
+	public void setDatasetId(long datasetId) {
+		this.datasetId = datasetId;
 	}
 }

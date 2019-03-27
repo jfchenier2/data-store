@@ -753,17 +753,11 @@ public class DatasetServiceImpl implements DatasetService {
 						datasetRepo.save(set);
 					}
 				} else if (set.getDatasetType() == DatasetType.AWARDS) {
-					if (set.getParentDataset() != null && set.getParentDataset().getDatasetConfiguration().getId() == ds.getDatasetConfiguration().getId()) {
+					if (set.getParentDataset() != null && set.getParentDataset().getId() != ds.getId() && set.getParentDataset().getDatasetConfiguration().getId() == ds.getDatasetConfiguration().getId()) {
 						set.setDatasetStatus(DatasetStatus.TO_DELETE);
 						datasetRepo.save(set);
 					}
 				} 
-//				else if (set.getDatasetType() == DatasetType.PAYMENTS) {
-//					if (set.getParentDataset() != null && set.getParentDataset().getParentDataset() != null && set.getParentDataset().getParentDataset().getDatasetConfiguration().getId() == ds.getDatasetConfiguration().getId()) {
-//						set.setDatasetStatus(DatasetStatus.TO_DELETE);
-//						datasetRepo.save(set);
-//					}
-//				}
 			}
 			ds.setDatasetStatus(DatasetStatus.APPROVED);
 			datasetRepo.save(ds);

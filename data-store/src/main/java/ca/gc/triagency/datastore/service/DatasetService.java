@@ -69,7 +69,7 @@ public interface DatasetService {
 	@Async
 	public void uploadAwardData(Dataset dataset);
 	
-	public void deleteDataset(Dataset dataset);
+	public void deleteDatasetById(Long id);
 	
 	public void deleteMarkedDatasets();
 }

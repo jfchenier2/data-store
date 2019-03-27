@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import javax.sql.DataSource;
@@ -35,6 +36,7 @@ import ca.gc.triagency.datastore.jdbc.template.DatasetJDBCTemplate;
 import ca.gc.triagency.datastore.model.Agency;
 import ca.gc.triagency.datastore.model.Dataset;
 import ca.gc.triagency.datastore.model.Dataset.DatasetStatus;
+import ca.gc.triagency.datastore.model.Dataset.DatasetType;
 import ca.gc.triagency.datastore.model.DatasetAppRegistrationRole;
 import ca.gc.triagency.datastore.model.DatasetApplication;
 import ca.gc.triagency.datastore.model.DatasetApplicationRegistration;
@@ -120,8 +122,9 @@ public class DatasetServiceImpl implements DatasetService {
 	@Autowired
 	DataSource dataSource;
 	
-	DatasetDAO jdbcTemplateObject = new DatasetJDBCTemplate();
-
+	@Autowired
+	DatasetDAO jdbcTemplateObject;
+	
 	@Override
 	public List<Dataset> getAllDatasets() {
 		return datasetRepo.findAll();
@@ -742,13 +745,25 @@ public class DatasetServiceImpl implements DatasetService {
 		boolean retval = false;
 		Dataset ds = datasetRepo.getOne(id);
 		if (ds != null) {
-			List<Dataset> approvedDatasets = datasetRepo.findByDatasetStatusAndDatasetType(DatasetStatus.APPROVED,
-					ds.getDatasetType());
+			List<Dataset> approvedDatasets = datasetRepo.findByDatasetStatus(DatasetStatus.APPROVED);//AndDatasetType(DatasetStatus.APPROVED, ds.getDatasetType());
 			for (Dataset set : approvedDatasets) {
-				if (set.getDatasetConfiguration().getId() == ds.getDatasetConfiguration().getId()) {
-					set.setDatasetStatus(DatasetStatus.TO_DELETE);
-					datasetRepo.save(set);
-				}
+				if (set.getDatasetType() == DatasetType.APPLICATIONS) {
+					if (set.getDatasetConfiguration().getId() == ds.getDatasetConfiguration().getId()) {
+						set.setDatasetStatus(DatasetStatus.TO_DELETE);
+						datasetRepo.save(set);
+					}
+				} else if (set.getDatasetType() == DatasetType.AWARDS) {
+					if (set.getParentDataset() != null && set.getParentDataset().getDatasetConfiguration().getId() == ds.getDatasetConfiguration().getId()) {
+						set.setDatasetStatus(DatasetStatus.TO_DELETE);
+						datasetRepo.save(set);
+					}
+				} 
+//				else if (set.getDatasetType() == DatasetType.PAYMENTS) {
+//					if (set.getParentDataset() != null && set.getParentDataset().getParentDataset() != null && set.getParentDataset().getParentDataset().getDatasetConfiguration().getId() == ds.getDatasetConfiguration().getId()) {
+//						set.setDatasetStatus(DatasetStatus.TO_DELETE);
+//						datasetRepo.save(set);
+//					}
+//				}
 			}
 			ds.setDatasetStatus(DatasetStatus.APPROVED);
 			datasetRepo.save(ds);
@@ -866,19 +881,21 @@ public class DatasetServiceImpl implements DatasetService {
 	}
 
 	@Override
-	public void deleteDataset(Dataset dataset) {
-		Long id = dataset.getId();
+	public void deleteDatasetById(Long id) {
+		jdbcTemplateObject.setDataSource(dataSource);
 		jdbcTemplateObject.deleteDatasetById(id);
 	}
 	
 	@Override
 	public void deleteMarkedDatasets() {
-		List<Dataset> toDelete = jdbcTemplateObject.getDatasetsToDelete();
-		
-		for(Dataset dataset : toDelete) {
-			Long id = dataset.getId();
-			jdbcTemplateObject.deleteDatasetById(id);
-		}
+		jdbcTemplateObject.setDataSource(dataSource);
+		jdbcTemplateObject.deleteToDelete();
+////		List<Dataset> toDelete = jdbcTemplateObject.getDatasetsToDelete();
+//		List<Long> toDeleteIds = jdbcTemplateObject.getDatasetsToDelete();
+//		for(Long id : toDeleteIds) {
+////			Long id = dataset.getId();
+//			jdbcTemplateObject.deleteDatasetById(id);
+//		}
 	}
 	
 }

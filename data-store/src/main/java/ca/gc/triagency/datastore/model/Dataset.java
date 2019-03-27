@@ -17,14 +17,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 public class Dataset {
-	public DatasetStatus getDatasetStatus() {
-		return datasetStatus;
-	}
-
-	public void setDatasetStatus(DatasetStatus datasetStatus) {
-		this.datasetStatus = datasetStatus;
-	}
-
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
@@ -68,6 +61,14 @@ public class Dataset {
 		APPLICATIONS, AWARDS, PAYMENTS
 	}
 
+	public DatasetStatus getDatasetStatus() {
+		return datasetStatus;
+	}
+
+	public void setDatasetStatus(DatasetStatus datasetStatus) {
+		this.datasetStatus = datasetStatus;
+	}
+	
 	public String getFilename() {
 		return filename;
 	}
@@ -110,6 +111,10 @@ public class Dataset {
 
 	public Long getId() {
 		return id;
+	}
+	
+	public void setId(Long id) {
+		this.id = id;
 	}
 	
 	public DatasetConfiguration getDatasetConfiguration() {

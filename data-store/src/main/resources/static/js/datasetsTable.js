@@ -18,18 +18,23 @@ $(document).ready( function () {
 		 var data = table.row( this ).data();
 		 window.location='viewDataset?id=' + data.id;
 	 });
-	 
+
+	 // for updating the current row and status information in the table.
 	 var intervalID = setInterval( function () {
 		 
-//		 var totalContainsZero = table.column(3).data().toArray().includes(0);
-//		 var isNormalizing = table.column(2).data().toArray().includes("NORMALIZING")
-//		 if(!totalContainsZero && !isNormalizing){
-//			 clearInterval(intervalID);
+		 var isUploading = table.column(2).data().toArray().includes("UPLOADING");
+		 var isNormalizing = table.column(2).data().toArray().includes("NORMALIZING");
+		 var isCreating = table.column(2).data().toArray().includes("CREATED");
+		 
+		 // clears the interval only if it's not in the process of uploading a dataset
+		 if(!isUploading && !isNormalizing && !isCreating) {
+			 clearInterval(intervalID);
 //			 alert('Interval Cleared');
-//		 }else{
+		 }else{
 			 table.ajax.reload(null, false);
-//		 }
+		 }
 		
-	 }, 500); 
+	 }, 300); 
 	 
 });
+

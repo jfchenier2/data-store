@@ -38,6 +38,7 @@
 			<div class="col-sm-2 col-form-label" th:utext="#{form.currentRecord}">Current Record</div>
 			<div class="col-sm-10" th:text="${dataset.currentRow}"></div>
 		</div>
+		<p><a class="btn btn-primary" th:href="@{deleteDataset(id=${dataset.id})}">Delete Dataset</a></p>
 		
 		<div th:if="${#strings.equals(dataset.datasetType, 'APPLICATIONS')}">
 			<div class="form-group row">

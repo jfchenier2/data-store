@@ -427,7 +427,6 @@ public class DatasetServiceImpl implements DatasetService {
 	}
 	
 	private void normalizeData(Dataset dataset, List<ApplyDatasetRow> applications) {
-		dataset.setDatasetStatus(DatasetStatus.NORMALIZING);
 		datasetRepo.save(dataset);
 		List<Agency> agencies = agencyRepo.findAll();
 		Agency SSHRC = null, NSERC = null;
@@ -455,6 +454,7 @@ public class DatasetServiceImpl implements DatasetService {
 //		List<ApplyDatasetRow> applications = new ArrayList<>();
 //		jdbcTemplateObject.setDataSource(dataSource);
 		for (ApplyDatasetRow row : applications) {
+			dataset.setDatasetStatus(DatasetStatus.NORMALIZING);
 			if (currentAppId.compareTo(row.getApplicationIdentifier()) != 0) {
 				if (currentApplication != null) {
 					currentApplication = datasetApplicationRepo.save(currentApplication);
@@ -525,7 +525,10 @@ public class DatasetServiceImpl implements DatasetService {
 			}
 			//row.fixOrgId();
 			//Long rowOrgId = new Long(row.getOrgId());
-			currentOrg = orgHash.get(row.getOrgId());
+			
+			//String key = Long.toString(row.getOrgId());
+			Object key = row.getOrgId();
+			currentOrg = orgHash.get(key.toString());
 			if (currentOrg == null) {
 				currentOrg = new DatasetOrganization();
 				currentOrg.setExtId(Long.toString(row.getOrgId()));
@@ -560,6 +563,11 @@ public class DatasetServiceImpl implements DatasetService {
 			appRegistration.setDatasetApplication(currentApplication);
 			appRegistrationRepo.save(appRegistration);
 			System.out.println("created DatasetOrganization: " + appRegistration);
+			if(rowNum % 25 == 0) {        
+				datasetRepo.save(dataset);
+			}
+			rowNum++;
+			dataset.setCurrentRow(rowNum);
 		}
 	}
 	

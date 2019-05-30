@@ -49,7 +49,19 @@ public class DatasetController {
 		model.addAttribute("datasets", datasetService.getAllDatasets());
 		return "datasets/home";
 	}
-
+	
+	@RequestMapping(value = "/cleanDatasets", method = RequestMethod.GET)
+	public String cleanDatasets() {
+		datasetService.deleteMarkedDatasets();
+		return "datasets/home";
+	}
+	
+	@RequestMapping(value = "/deleteDataset", method = RequestMethod.GET)
+	public String deleteDataset(@RequestParam Long id) {
+		datasetService.deleteDatasetById(id);
+		return "datasets/home";
+	}
+	
 	@GetMapping(value = "/createAwardDataset")
 	public String createAwardDatasetSelectFile(@RequestParam long id, Model model) {
 		model.addAttribute("parentDataset", datasetService.getDataset(id));

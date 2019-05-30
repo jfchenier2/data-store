@@ -3,8 +3,13 @@ package ca.gc.triagency.datastore.jdbc.template;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLType;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -15,19 +20,33 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+import org.springframework.stereotype.Component;
 
 import ca.gc.triagency.datastore.jdbc.DatasetDAO;
+import ca.gc.triagency.datastore.jdbc.DatasetRowMapper;
 import ca.gc.triagency.datastore.model.Dataset;
+import ca.gc.triagency.datastore.model.Dataset.DatasetStatus;
+import ca.gc.triagency.datastore.model.Dataset.DatasetType;
 import ca.gc.triagency.datastore.model.file.ApplyDatasetRow;
 import ca.gc.triagency.datastore.model.file.AwardDatasetRow;
+import ca.gc.triagency.datastore.repo.DatasetConfigurationRepository;
+import ca.gc.triagency.datastore.repo.DatasetRepository;
+import ca.gc.triagency.datastore.service.DatasetService;
 
+@Component
 public class DatasetJDBCTemplate implements DatasetDAO {
 	
 	
 	private DataSource dataSource;
 	
 	@Autowired
-	private JdbcTemplate jdbcTemplateObject;
+	JdbcTemplate jdbcTemplateObject;
+	
+	@Autowired
+	DatasetRepository datasetRepo;
+	
+	@Autowired
+	DatasetConfigurationRepository datasetConfigRepo;
 	
 	@Override
 	public void setDataSource(DataSource dataSource) {
@@ -140,23 +159,47 @@ public class DatasetJDBCTemplate implements DatasetDAO {
 	}
 	
 	@Override
+	public void deleteToDelete() {
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(dataSource).withProcedureName("delete_datasets_to_delete");
+		jdbcCall.execute();
+	}
+	
+	@Override
 	public void deleteDatasetById(Long id) {
 		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(dataSource).withProcedureName("delete_dataset_by_id");
 		SqlParameterSource in = new MapSqlParameterSource().addValue("in_id", id);
 		jdbcCall.execute(in);
 	}
-	
-	@Override
-	public List<Dataset> getDatasetsToDelete(){
-		String sql = "SELECT * FROM data_store.dataset WHERE dataset_status = \"TO_DELETE\"";
-		List<Dataset> toDelete = null;
-		try {
-			toDelete = jdbcTemplateObject.queryForList(sql, Dataset.class);
-		}catch (DataAccessException e) {
-			System.out.println("Couldn't delete datasets. Error accessing data.");
-		}
-		
-		return toDelete;
-	}
+//	
+//	@Override
+//	public List<Long> getDatasetsToDelete(){
+//		String sql = "SELECT id FROM data_store.dataset WHERE dataset_status = \"TO_DELETE\"";
+//		List<Map<String, Object>> queryResult = jdbcTemplateObject.queryForList(sql);
+////		List<Dataset> toDelete = new ArrayList<>();
+//		List<Long> toDeleteIds = new ArrayList<>();
+//		for(Map<String, Object> row : queryResult) {
+//			Long id = (Long) row.get("id");
+//			toDeleteIds.add(id);
+////			Dataset dataset = new Dataset();
+////			dataset.setId((Long) row.get("id"));
+////			dataset.setFilename((String) row.get("filename"));
+////			if(row.get("parent_dataset_id") != null) {
+////				dataset.setParentDataset(datasetRepo.getOne((Long) row.get("parent_dataset_id")));
+////			} else {
+////				dataset.setParentDataset(null);
+////			}
+////			dataset.setDatasetConfiguration(datasetConfigRepo.getOne((Long) row.get("dataset_configuration_id")));
+////			dataset.setCreateDateTime((((Timestamp) row.get("create_date_time")).toLocalDateTime()));
+////			dataset.setUpdateDateTime((((Timestamp) row.get("update_date_time")).toLocalDateTime()));
+////			dataset.setTotalRecords((Long)row.get("total_records"));
+////			dataset.setCurrentRow((Long) row.get("current_row"));
+////			dataset.setDatasetStatus(DatasetStatus.valueOf((String) row.get("dataset_status")));
+////			dataset.setDatasetType(DatasetType.valueOf((String) row.get("dataset_type")));
+//			
+////			toDelete.add(dataset);
+//		}
+//		
+//		return toDeleteIds;
+//	}
 	
 }
